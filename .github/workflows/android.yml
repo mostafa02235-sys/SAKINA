@@ -135,6 +135,8 @@ jobs:
           api-level: 34
           arch: x86_64
           target: google_apis
+          cores: 4
+          ram-size: 4096M
           disable-animations: false
           script: bash android/smoke-test.sh SAKINA.apk
 

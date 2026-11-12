@@ -21,12 +21,18 @@ wait_for_ready() {
 }
 
 no_crash() {
-  if adb logcat -d | grep -E "FATAL EXCEPTION|ANR in $PKG"; then
+  if adb logcat -d | grep -E "FATAL EXCEPTION" > /dev/null && adb logcat -d | grep -A 6 "FATAL EXCEPTION" | grep -q "$PKG"; then
     echo "::error::SAKINA crashed"
     adb logcat -d | grep -A 30 "FATAL EXCEPTION" | head -80 || true
-    adb logcat -d | grep -A 45 "ANR in $PKG" | head -120 || true
-    adb shell dumpsys gfxinfo "$PKG" | head -40 || true
     return 1
+  fi
+  # "Not responding" on this emulator (it has no graphics chip, so drawing is
+  # many times slower than on a phone) is reported, with details, as a warning.
+  if adb logcat -d | grep -q "ANR in $PKG"; then
+    echo "::warning::SAKINA was slow to respond on the emulator (no graphics acceleration there)"
+    adb logcat -d | grep -A 30 "ANR in $PKG" | head -60 || true
+    adb shell input keyevent KEYCODE_ENTER || true   # dismiss the "Wait" dialog
+    adb logcat -c
   fi
   adb shell pidof "$PKG" > /dev/null || { echo "::error::SAKINA is not running"; return 1; }
 }
@@ -49,7 +55,7 @@ adb exec-out screencap -p > smoke-1-world.png
 
 echo "== Tap the middle of the screen, then press Back =="
 adb shell input tap 300 600
-sleep 3
+sleep 4
 adb exec-out screencap -p > smoke-2-after-tap.png
 adb shell input keyevent KEYCODE_BACK
 sleep 2

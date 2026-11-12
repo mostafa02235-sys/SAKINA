@@ -9,7 +9,7 @@
   color: #fff;
 }
 .island__sky .topbar { justify-content: space-between; color: var(--ink); }
-.island__hero { width: min(64%, 260px); margin: -8px auto 0; animation: hover-float 5s ease-in-out infinite; }
+.island__hero { width: min(64%, 260px); margin: -8px auto 0; animation: hover-float 5s ease-in-out infinite; will-change: translate; }
 .island__name {
   font-size: var(--text-2xl);
   text-shadow: 0 3px 0 var(--ink);

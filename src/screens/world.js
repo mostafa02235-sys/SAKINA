@@ -174,6 +174,12 @@ export function mount(root) {
     });
   }, { passive: true });
 
+  // Only islands that are on screen keep animating; this saves battery and keeps scrolling smooth.
+  const watcher = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => entry.target.classList.toggle('is-away', !entry.isIntersecting));
+  }, { root, rootMargin: '80px' });
+  root.querySelectorAll('.isle').forEach((el) => watcher.observe(el));
+
   // Keep the party in place if the screen is resized or rotated.
   const onResize = () => placeParty(standingOn, false);
   window.addEventListener('resize', onResize);
@@ -188,6 +194,7 @@ export function mount(root) {
 
   return () => {
     alive = false;
+    watcher.disconnect();
     window.removeEventListener('resize', onResize);
   };
 }

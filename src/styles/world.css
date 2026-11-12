@@ -92,13 +92,16 @@
   animation: hover-float 5s ease-in-out infinite;
   animation-delay: calc(var(--i) * -1.3s);
   transition: transform var(--t-med) var(--ease-bounce);
+  will-change: translate;
 }
+/* Islands that are scrolled out of view stop animating (world.js marks them). */
+.isle.is-away .isle__float, .isle.is-away .pip { animation-play-state: paused; }
 .isle__button:active .isle__float { transform: scale(.96); }
 @keyframes hover-float {
   0%, 100% { translate: 0 0; }
   50% { translate: 0 -9px; }
 }
-.island-art { width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 14px 0 rgba(29, 42, 77, .16)); }
+.island-art { width: 100%; height: auto; overflow: visible; }
 
 .isle__sign {
   position: relative;
@@ -156,8 +159,9 @@
 .pip--open { background: var(--go); animation: beckon 1.8s ease-in-out infinite; }
 
 /* States */
-.isle--locked .island-art { filter: grayscale(.85) brightness(1.08) drop-shadow(0 14px 0 rgba(29, 42, 77, .12)); }
-.isle--planned .island-art { filter: grayscale(.5) opacity(.6); }
+/* Far-off islands are faded rather than filtered: filters are costly to draw on phones. */
+.isle--locked .island-art { opacity: .62; }
+.isle--planned .island-art { opacity: .42; }
 .isle--planned .isle__sign { background: #eef1fa; border-style: dashed; box-shadow: none; }
 .isle--planned .isle__float, .isle--locked .isle__float { animation-duration: 8s; }
 .isle__badge {
