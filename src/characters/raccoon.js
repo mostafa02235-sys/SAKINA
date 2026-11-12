@@ -29,11 +29,12 @@ export function drawRaccoon(look, expression) {
               stroke-linecap="round" stroke-dasharray="0.1 200" stroke-dashoffset="-99.9"/>
       </g>`,
     body: `
-      <ellipse cx="80" cy="211" rx="17" ry="10" fill="${marks}" ${outlined}/>
-      <ellipse cx="120" cy="211" rx="17" ry="10" fill="${marks}" ${outlined}/>
+      <ellipse class="ch-foot ch-foot--l" cx="80" cy="211" rx="17" ry="10" fill="${marks}" ${outlined}/>
+      <ellipse class="ch-foot ch-foot--r" cx="120" cy="211" rx="17" ry="10" fill="${marks}" ${outlined}/>
       <ellipse cx="100" cy="172" rx="40" ry="42" fill="${fur}" ${outlined}/>
       <ellipse cx="100" cy="180" rx="24" ry="27" fill="${light}"/>`,
-    arms: tube(armL, marks, 15) + tube(armR, marks, 15),
+    arms: `<g class="ch-arm ch-arm--l" style="transform-origin: 70px 152px">${tube(armL, marks, 15)}</g>
+           <g class="ch-arm ch-arm--r" style="transform-origin: 130px 152px">${tube(armR, marks, 15)}</g>`,
     head: `
       <path d="M86 44 L92 22 L100 38 L109 18 L114 44 Z" fill="${marks}" ${outlined}/>
       <circle cx="56" cy="54" r="19" fill="${fur}" ${outlined}/>

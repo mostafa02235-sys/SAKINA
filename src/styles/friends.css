@@ -1,6 +1,7 @@
 /* The Friends (customisation) screen. */
 
-.friends { display: flex; flex-direction: column; background: var(--paper); }
+.friends { display: flex; flex-direction: column; min-height: 100%; background: var(--paper); }
+.stage { touch-action: pan-y; }
 
 /* ---------- Stage: both friends on a patch of island ---------- */
 .stage {
@@ -92,3 +93,26 @@
 .tile.is-active { background: var(--star); }
 .tile.is-locked { background: #eef1fa; color: var(--ink-soft); box-shadow: none; border-style: dashed; }
 .tile__lock { display: inline-flex; align-items: center; gap: 3px; font-size: var(--text-xs); }
+
+/* ---------- Save / Restore bar, always within reach above the tab bar ---------- */
+.lookbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  margin-top: auto;
+  padding: var(--s2) var(--s4) calc(var(--s3) + var(--ledge));
+  border-top: var(--outline) solid var(--ink);
+  background: var(--paper);
+}
+.lookbar.is-dirty { background: #fff0c9; }
+.lookbar__note { margin-bottom: var(--s2); font-size: var(--text-sm); font-weight: 700; color: var(--ink-soft); text-align: center; }
+.lookbar.is-dirty .lookbar__note { color: var(--ink); }
+.lookbar__actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); }
+.lookbar .btn { min-height: 50px; padding: var(--s2) var(--s3); font-size: var(--text-md); }
+
+/* Short phones: let the stage scroll away so the options keep enough room. */
+@media (max-height: 700px) {
+  .stage { position: relative; }
+  .stage__spot.is-chosen .character { max-width: 150px; }
+  .stage__spot .character { max-width: 110px; }
+}

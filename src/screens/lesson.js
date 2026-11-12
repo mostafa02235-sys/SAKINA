@@ -10,6 +10,7 @@ import { store } from '../core/store.js';
 import { go } from '../core/router.js';
 import { t, tr, num, lang } from '../core/i18n.js';
 import { esc, onClick } from '../core/dom.js';
+import { buzz } from '../core/feel.js';
 import { renderCharacter } from '../characters/index.js';
 import { icon, starRow } from '../components/icons.js';
 import { lessonStatus, starsForScore, completeLesson, nextUp } from '../systems/progress.js';
@@ -94,7 +95,7 @@ function renderFooter(step, state) {
   return `
     <div class="lesson__foot feedback feedback--${right ? 'right' : 'wrong'}" role="status">
       <div class="feedback__row">
-        <div class="feedback__friend">${character(right ? 'raccoon' : 'cat', right ? 'cheer' : 'oops')}</div>
+        <div class="feedback__friend">${character(right ? 'raccoon' : 'cat', right ? 'cheer' : state.queue[state.position].retry ? 'sad' : 'oops')}</div>
         <div>
           <p class="feedback__title">${t(right ? 'lesson.right' : 'lesson.wrong')}</p>
           <p class="feedback__why">${esc(tr(step.why))}</p>
@@ -120,7 +121,7 @@ function renderFinish(found, result) {
       <p class="finish__lesson">${esc(tr(found.lesson.title))}</p>
       <div class="finish__friends">
         ${character('raccoon', 'cheer')}
-        ${character('cat', 'cheer')}
+        ${character('cat', unlocks.length ? 'surprised' : 'cheer')}
       </div>
       ${result.gained > 0 ? `<p class="finish__gain">${icon('star', 22)} ${t('finish.gained', { n: num(result.gained) })}</p>` : ''}
       ${unlocks.length ? `<ul class="finish__unlocks">${unlocks.map((line) => `<li>${esc(line)}</li>`).join('')}</ul>` : ''}
@@ -177,12 +178,14 @@ export function mount(root, [lessonId]) {
     if (state.position < state.queue.length) return draw();
     const result = completeLesson(lessonId, starsForScore(state.firstTryCorrect, questionCount));
     root.innerHTML = renderFinish(found, result);
+    buzz('reward');
     root.scrollTop = 0;
   }
 
   onClick(root, '[data-option]', (button) => {
     if (state.phase === 'feedback') return;
     state.selected = Number(button.dataset.option);
+    buzz('tap');
     root.querySelectorAll('[data-option]').forEach((el) => {
       const on = el === button;
       el.classList.toggle('is-selected', on);
@@ -196,6 +199,7 @@ export function mount(root, [lessonId]) {
     const right = state.selected === entry.step.answer;
     if (right && !entry.retry) state.firstTryCorrect += 1;
     if (!right && !entry.retry) state.queue.push({ step: entry.step, retry: true });
+    buzz(right ? 'right' : 'wrong');
     state.phase = 'feedback';
     draw();
     root.querySelector('.feedback [data-action="next"]')?.focus({ preventScroll: true });

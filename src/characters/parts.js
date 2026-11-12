@@ -18,7 +18,7 @@ export const outlined = stroke;
 
 // Each expression describes brows, eyes and mouth. Coordinates are relative
 // to a face whose eyes sit at (-eyeGap, 0) and (+eyeGap, 0).
-export const EXPRESSIONS = ['happy', 'curious', 'cheer', 'calm', 'oops'];
+export const EXPRESSIONS = ['happy', 'curious', 'surprised', 'cheer', 'calm', 'sad', 'angry', 'oops'];
 
 function brow(x, tilt, lift) {
   const dx = 11;
@@ -66,10 +66,30 @@ export function drawFace(face, expression) {
       mouth = smile(8, 7);
       break;
     case 'oops':
-      brows = brow(L, -5, 0) + brow(R, 5, 0);
+      brows = brow(L, 5, 2) + brow(R, -5, 2);
       eyes = eye(L, 0, 4) + eye(R, 0, 4);
       mouth = `<path d="M-11 ${my + 4} Q-5 ${my - 3} 0 ${my + 4} Q5 ${my + 11} 11 ${my + 4}" fill="none" ${stroke}/>`;
       extra = `<path d="M${R + 26} -30 q-8 14 0 17 q8 -3 0 -17 Z" fill="#9fdcff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;
+      break;
+    case 'surprised':
+      brows = brow(L, 1, 9) + brow(R, -1, 9);
+      eyes = eye(L, 0, -1) + eye(R, 0, -1);
+      mouth = `<ellipse cx="0" cy="${my + 6}" rx="8" ry="10" fill="#7a2f45" ${stroke}/>`;
+      extra = `<path d="M${L - 30} -34 l-9 -7 M${L - 24} -44 l-5 -10 M${R + 30} -34 l9 -7 M${R + 24} -44 l5 -10"
+                     fill="none" ${stroke}/>`;
+      break;
+    case 'sad':
+      brows = brow(L, 7, 0) + brow(R, -7, 0);
+      eyes = eye(L, -1, 5) + eye(R, 1, 5);
+      mouth = `<path d="M-10 ${my + 9} Q0 ${my - 1} 10 ${my + 9}" fill="none" ${stroke}/>`;
+      extra = `<path d="M${L - 4} 17 q-6 11 0 13 q6 -2 0 -13 Z" fill="#9fdcff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;
+      break;
+    case 'angry':
+      brows = brow(L, -8, -9) + brow(R, 8, -9);
+      eyes = eye(L, 2, 1) + eye(R, -2, 1);
+      mouth = `<path d="M-10 ${my + 8} Q0 ${my + 1} 10 ${my + 8}" fill="none" ${stroke}/>`;
+      extra = `<path d="M${R + 22} -40 q5 -4 0 -9 q7 0 9 -6 q2 6 9 6 q-5 5 0 9 q-7 0 -9 6 q-2 -6 -9 -6 Z"
+                     fill="#ff7a66" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;
       break;
     case 'happy':
     default:

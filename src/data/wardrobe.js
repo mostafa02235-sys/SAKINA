@@ -37,6 +37,9 @@ export const EXPRESSION_NAMES = {
   cheer: { ar: 'متحمّس', en: 'Cheering' },
   calm: { ar: 'مطمئن', en: 'Calm' },
   oops: { ar: 'أوه!', en: 'Oops' },
+  surprised: { ar: 'مندهش', en: 'Surprised' },
+  sad: { ar: 'حزين', en: 'Sad' },
+  angry: { ar: 'غاضب', en: 'Angry' },
 };
 
 /** Every item that needs stars, used to announce new unlocks. */

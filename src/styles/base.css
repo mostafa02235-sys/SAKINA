@@ -1,5 +1,26 @@
 /* Reset, page frame and typography. */
 
+/* Fonts packed inside the Android app (added to assets/fonts by the build).
+   On the website, where these files are absent, the online copies are used. */
+@font-face {
+  font-family: "SAKINA UI";
+  src: url("../../assets/fonts/BalooBhaijaan2.ttf") format("truetype");
+  font-weight: 400 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "SAKINA Scripture";
+  src: url("../../assets/fonts/Amiri-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "SAKINA Scripture";
+  src: url("../../assets/fonts/Amiri-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
@@ -18,7 +39,13 @@ body {
   color: var(--ink);
   background: var(--sky-high);
   overscroll-behavior: none;
+  /* It is an app, not a page: no text selection or long-press menus while playing. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
+
+button, a { touch-action: manipulation; }
 
 h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { font-weight: 800; line-height: 1.15; }
@@ -62,8 +89,23 @@ svg { display: block; }
   -webkit-overflow-scrolling: touch;
 }
 
-/* One screen-enter motion for the whole app. */
-.host > .view { animation: view-in var(--t-med) var(--ease-out); min-height: 100%; }
+.host > .view { min-height: 100%; }
+
+/* Moving between screens. Going deeper (world -> island -> lesson) zooms in,
+   going back zooms out, and switching tabs cross-fades. main.js sets data-nav. */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 300ms; animation-timing-function: var(--ease-out); }
+[data-nav="in"]::view-transition-old(root) { animation-name: nav-leave-in; }
+[data-nav="in"]::view-transition-new(root) { animation-name: nav-enter-in; }
+[data-nav="out"]::view-transition-old(root) { animation-name: nav-leave-out; }
+[data-nav="out"]::view-transition-new(root) { animation-name: nav-enter-out; }
+@keyframes nav-leave-in { to { opacity: 0; transform: scale(1.25); } }
+@keyframes nav-enter-in { from { opacity: 0; transform: scale(.85); } }
+@keyframes nav-leave-out { to { opacity: 0; transform: scale(.85); } }
+@keyframes nav-enter-out { from { opacity: 0; transform: scale(1.2); } }
+
+/* Browsers without view transitions get a simple rise-in instead. */
+.no-view-transitions .host > .view { animation: view-in var(--t-med) var(--ease-out); }
 @keyframes view-in {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
@@ -85,6 +127,25 @@ svg { display: block; }
   white-space: nowrap;
 }
 
+/* Shown if a screen fails to draw. */
+.oops-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s4);
+  padding: var(--s5);
+  background: var(--paper);
+  text-align: center;
+}
+
+/* "Less motion" in Settings, or the phone's own reduce-motion option. */
+[data-motion="reduced"] *, [data-motion="reduced"] *::before, [data-motion="reduced"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+  scroll-behavior: auto !important;
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 1ms !important;

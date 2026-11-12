@@ -30,11 +30,12 @@ export function drawCat(look, expression) {
               stroke-linecap="round" stroke-dasharray="26 200" stroke-dashoffset="-74"/>
       </g>`,
     body: `
-      <ellipse cx="84" cy="212" rx="14" ry="9" fill="${light}" ${outlined}/>
-      <ellipse cx="116" cy="212" rx="14" ry="9" fill="${light}" ${outlined}/>
+      <ellipse class="ch-foot ch-foot--l" cx="84" cy="212" rx="14" ry="9" fill="${light}" ${outlined}/>
+      <ellipse class="ch-foot ch-foot--r" cx="116" cy="212" rx="14" ry="9" fill="${light}" ${outlined}/>
       <ellipse cx="100" cy="176" rx="32" ry="39" fill="${fur}" ${outlined}/>
       <ellipse cx="100" cy="168" rx="16" ry="21" fill="${light}"/>`,
-    arms: tube(armL, fur, 12) + tube(armR, fur, 12),
+    arms: `<g class="ch-arm ch-arm--l" style="transform-origin: 76px 156px">${tube(armL, fur, 12)}</g>
+           <g class="ch-arm ch-arm--r" style="transform-origin: 124px 156px">${tube(armR, fur, 12)}</g>`,
     head: `
       <path d="M46 74 L50 18 L92 46 Z" fill="${fur}" ${outlined}/>
       <path d="M56 58 L58 36 L76 48 Z" fill="#ffb3c1"/>

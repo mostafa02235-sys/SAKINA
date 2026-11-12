@@ -195,3 +195,9 @@
   font-weight: 700;
 }
 .finish__actions { display: grid; gap: var(--s3); width: 100%; margin-top: auto; padding-top: var(--s5); padding-bottom: var(--ledge); }
+
+/* Each new step slides in from the reading direction. */
+.lesson__body > * { animation: step-in var(--t-med) var(--ease-out); }
+@keyframes step-in { from { opacity: 0; transform: translateX(-24px); } }
+[dir="ltr"] .lesson__body > * { animation-name: step-in-ltr; }
+@keyframes step-in-ltr { from { opacity: 0; transform: translateX(24px); } }

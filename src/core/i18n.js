@@ -5,13 +5,13 @@ import { store } from './store.js';
 import { STRINGS } from '../data/strings.js';
 
 export function lang() {
-  const chosen = store.get().lang;
+  const chosen = store.get().prefs.lang;
   if (chosen) return chosen;
   return (navigator.language || 'ar').toLowerCase().startsWith('ar') ? 'ar' : 'en';
 }
 
 export function setLang(next) {
-  store.update((s) => { s.lang = next; });
+  store.update((s) => { s.prefs.lang = next; });
 }
 
 /** Interface string by key, with optional {placeholders}. */

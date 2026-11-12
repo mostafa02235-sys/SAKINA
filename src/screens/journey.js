@@ -8,6 +8,7 @@ import { t, tr, num, lang, setLang } from '../core/i18n.js';
 import { esc, onClick } from '../core/dom.js';
 import { icon } from '../components/icons.js';
 import { toast } from '../components/toast.js';
+import { buzz } from '../core/feel.js';
 import { level, totalStars, dayStreak, islandProgress, islandStatus, isItemUnlocked } from '../systems/progress.js';
 
 function renderIslandRow(island) {
@@ -31,6 +32,7 @@ function renderIslandRow(island) {
 
 export function mount(root) {
   const lv = level();
+  const prefs = store.get().prefs;
   const stars = totalStars();
   const lessonsDone = Object.keys(store.get().lessons).length;
   const toNext = lv.next
@@ -83,6 +85,12 @@ export function mount(root) {
               <button class="seg__btn${lang() === 'ar' ? ' is-active' : ''}" data-lang="ar" lang="ar">العربية</button>
               <button class="seg__btn${lang() === 'en' ? ' is-active' : ''}" data-lang="en" lang="en">English</button>
             </div>
+            <button class="switch" role="switch" data-pref="motion" aria-checked="${prefs.motion === 'reduced'}">
+              <span>${t('journey.lessMotion')}</span><i></i>
+            </button>
+            <button class="switch" role="switch" data-pref="haptics" aria-checked="${prefs.haptics}">
+              <span>${t('journey.haptics')}</span><i></i>
+            </button>
             <button class="btn btn--wide" data-action="reset">${t('journey.reset')}</button>
           </div>
         </section>
@@ -91,6 +99,15 @@ export function mount(root) {
 
   onClick(root, '[data-lang]', (button) => {
     setLang(button.dataset.lang);
+    refresh();
+  });
+
+  onClick(root, '[data-pref]', (button) => {
+    store.update((save) => {
+      if (button.dataset.pref === 'motion') save.prefs.motion = save.prefs.motion === 'reduced' ? 'full' : 'reduced';
+      else save.prefs.haptics = !save.prefs.haptics;
+    });
+    buzz('tap');
     refresh();
   });
 

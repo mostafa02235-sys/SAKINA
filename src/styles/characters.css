@@ -5,7 +5,9 @@
 .character .ch-all,
 .character .ch-head,
 .character .ch-tail,
+.character .ch-arm,
 .character .ch-eyes { transform-box: view-box; }
+.character .ch-foot { transform-box: fill-box; transform-origin: center; }
 
 /* Idle: breathing bob, slow tail sway, occasional blink. */
 .character .ch-all { animation: ch-bob 3.2s ease-in-out infinite; transform-origin: 100px 215px; }
@@ -61,4 +63,47 @@
 @keyframes ch-curious {
   0%, 100% { transform: rotate(5deg); }
   50% { transform: rotate(9deg); }
+}
+
+.character.is-surprised .ch-all { animation: ch-startle .45s var(--ease-bounce) 1 both, ch-bob 3.2s ease-in-out .45s infinite; }
+.character.is-sad .ch-head { animation: ch-droop 3.4s ease-in-out infinite; }
+.character.is-sad .ch-tail { animation-duration: 5s; }
+.character.is-angry .ch-all { animation: ch-fume .32s ease-in-out infinite; }
+.character.is-angry .ch-tail { animation-duration: .7s; }
+
+@keyframes ch-startle {
+  0% { transform: translateY(0) scaleY(.9); }
+  55% { transform: translateY(-14px) scaleY(1.06); }
+  100% { transform: none; }
+}
+@keyframes ch-droop {
+  0%, 100% { transform: rotate(-3deg) translateY(3px); }
+  50% { transform: rotate(-6deg) translateY(5px); }
+}
+@keyframes ch-fume {
+  0%, 100% { transform: translateX(-1.5px); }
+  50% { transform: translateX(1.5px); }
+}
+
+/* Walking: feet step in turn, arms swing, the body rocks. Add the is-walking class. */
+.character.is-walking .ch-all { animation: ch-walk-rock .44s ease-in-out infinite; }
+.character.is-walking .ch-foot--l { animation: ch-step .44s ease-in-out infinite; }
+.character.is-walking .ch-foot--r { animation: ch-step .44s ease-in-out -.22s infinite; }
+.character.is-walking .ch-arm--l { animation: ch-swing .44s ease-in-out infinite; }
+.character.is-walking .ch-arm--r { animation: ch-swing .44s ease-in-out -.22s infinite; }
+.character.is-walking .ch-tail { animation-duration: .88s; }
+.character.is-walking .ch-shadow { animation: ch-shadow-jump .22s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+@keyframes ch-walk-rock {
+  0%, 100% { transform: rotate(-3deg) translateY(0); }
+  25%, 75% { transform: rotate(0deg) translateY(-5px); }
+  50% { transform: rotate(3deg) translateY(0); }
+}
+@keyframes ch-step {
+  0%, 50%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(7px, -10px) rotate(-14deg); }
+}
+@keyframes ch-swing {
+  0%, 100% { transform: rotate(16deg); }
+  50% { transform: rotate(-16deg); }
 }

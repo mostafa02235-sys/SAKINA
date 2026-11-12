@@ -31,7 +31,10 @@
 .hud .chip { min-height: 34px; padding: 0 10px; }
 
 /* ---------- Sky decoration ---------- */
-.sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; --scroll: 0; }
+/* Parallax: world.js feeds the scroll position in; far things move less. */
+.sky .sun { transform: translateY(calc(var(--scroll) * .55px)); }
+.sky .cloud { margin-top: calc(var(--scroll) * .22px); }
 .sun {
   position: absolute;
   top: 70px; inset-inline-end: -40px;
@@ -74,7 +77,6 @@
 }
 .isle { position: relative; width: 62%; margin-bottom: 58px; }
 .isle:nth-child(even) { margin-left: auto; }
-.isle:last-child { margin-bottom: 0; }
 
 .isle__button {
   display: block;
@@ -121,17 +123,37 @@
   color: var(--ink-soft);
 }
 
-/* Zad and Lulu stand on the island the player is working on. */
-.isle__friends {
+/* Zad and Lulu: one group that stands on an island and walks between them.
+   world.js sets its size and position. */
+.party {
   position: absolute;
-  inset-inline: 0;
-  top: 25%;
+  top: 0; left: 0;
+  z-index: 2;
+  list-style: none;
+  pointer-events: none;
+  transition: transform 0ms cubic-bezier(.45, .05, .55, .95);
+  will-change: transform;
+}
+.party__float {
   display: flex;
   justify-content: space-between;
   padding: 0 7%;
-  pointer-events: none;
+  animation: hover-float 5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -1.3s);
 }
-.isle__friends .character { width: 27%; }
+.party.is-walking .party__float { animation: none; }
+.party .character { width: 27%; }
+
+/* One dot per lesson on the island's sign */
+.pips { display: inline-flex; gap: 4px; margin: 3px 0 1px; direction: ltr; }
+.pip {
+  width: 12px; height: 12px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: #e3e6f2;
+}
+.pip--done { background: var(--star); }
+.pip--open { background: var(--go); animation: beckon 1.8s ease-in-out infinite; }
 
 /* States */
 .isle--locked .island-art { filter: grayscale(.85) brightness(1.08) drop-shadow(0 14px 0 rgba(29, 42, 77, .12)); }
@@ -206,4 +228,12 @@
   background: var(--paper);
   font-weight: 700;
   text-align: center;
+}
+
+/* Narrow phones: keep the top strip on one line. */
+@media (max-width: 350px) {
+  .hud { padding-inline: var(--s3); gap: var(--s1); }
+  .hud__name { font-size: var(--text-lg); }
+  .hud__stats { gap: var(--s1); }
+  .hud .chip { padding: 0 7px; gap: 3px; font-size: var(--text-xs); }
 }

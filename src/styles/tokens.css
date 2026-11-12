@@ -37,8 +37,8 @@
   --explain: #4a6fd6;     /* explanation cards */
 
   /* Type */
-  --font-ui: "Baloo Bhaijaan 2", "Segoe UI", Tahoma, system-ui, sans-serif;
-  --font-scripture: "Amiri", "Traditional Arabic", "Scheherazade New", serif;
+  --font-ui: "SAKINA UI", "Baloo Bhaijaan 2", "Segoe UI", Tahoma, system-ui, sans-serif;
+  --font-scripture: "SAKINA Scripture", "Amiri", "Traditional Arabic", "Scheherazade New", serif;
 
   --text-xs: 0.8125rem;
   --text-sm: 0.9375rem;
