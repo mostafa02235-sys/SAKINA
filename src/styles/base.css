@@ -1,0 +1,95 @@
+/* Reset, page frame and typography. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  font-family: var(--font-ui);
+  font-size: var(--text-md);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--sky-high);
+  overscroll-behavior: none;
+}
+
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { font-weight: 800; line-height: 1.15; }
+button { font: inherit; color: inherit; cursor: pointer; }
+svg { display: block; }
+
+:focus-visible {
+  outline: 3px solid var(--star);
+  outline-offset: 3px;
+  border-radius: var(--r-sm);
+}
+.screen:focus { outline: none; }
+
+/* The phone-shaped frame. On wide screens the app stays a centred column. */
+.app {
+  position: relative;
+  height: 100dvh;
+  max-width: var(--app-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--sky-mid);
+}
+
+@media (min-width: 560px) {
+  body { background: #0f3c5c; }
+  .app { box-shadow: 0 0 0 var(--outline) var(--ink), 0 30px 80px rgba(0, 0, 0, .35); }
+}
+
+.screen {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+/* The scrolling area. A new one is created for every screen visit (see main.js). */
+.host {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* One screen-enter motion for the whole app. */
+.host > .view { animation: view-in var(--t-med) var(--ease-out); min-height: 100%; }
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.scripture {
+  font-family: var(--font-scripture);
+  font-size: 1.6rem;
+  line-height: 2.1;
+  direction: rtl;
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

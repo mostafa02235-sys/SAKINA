@@ -1,0 +1,116 @@
+/* An island up close. --grass colours are set per island by the screen. */
+
+.island { display: flex; flex-direction: column; background: var(--grass-soft); }
+
+.island__sky {
+  background: linear-gradient(180deg, var(--sky-mid), var(--sky-low));
+  text-align: center;
+  padding-bottom: var(--s6);
+  color: #fff;
+}
+.island__sky .topbar { justify-content: space-between; color: var(--ink); }
+.island__hero { width: min(64%, 260px); margin: -8px auto 0; animation: hover-float 5s ease-in-out infinite; }
+.island__name {
+  font-size: var(--text-2xl);
+  text-shadow: 0 3px 0 var(--ink);
+  -webkit-text-stroke: 1px var(--ink);
+  paint-order: stroke fill;
+}
+.island__about { padding: 0 var(--s5); font-weight: 600; color: var(--ink); }
+
+/* The ground: a scalloped grass edge, then the lesson path. */
+.island__ground {
+  position: relative;
+  flex: 1;
+  margin-top: -18px;
+  padding: var(--s6) var(--s4) var(--s5);
+  border-top: var(--outline) solid var(--ink);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: var(--grass-soft);
+}
+
+.stones {
+  position: relative;
+  list-style: none;
+  margin: 0 0 var(--s5);
+  padding: 0;
+  display: grid;
+  gap: var(--s5);
+}
+/* The dotted footpath joining the stones */
+.stones::before {
+  content: "";
+  position: absolute;
+  inset-block: 34px;
+  inset-inline-start: 31px;
+  border-inline-start: 8px dotted var(--grass-deep);
+  opacity: .55;
+}
+
+.stone__button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: start;
+}
+.stone__disc {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 70px; height: 62px;
+  border: var(--outline) solid var(--ink);
+  border-radius: 50%;
+  background: #e6e9f4;
+  box-shadow: 0 7px 0 var(--ink);
+  font-size: var(--text-xl);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+.stone__button:active .stone__disc { transform: translateY(7px); box-shadow: 0 0 0 var(--ink); }
+
+.stone__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  padding: var(--s3) var(--s4);
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-md);
+  background: var(--paper);
+}
+.stone__title { font-size: var(--text-lg); font-weight: 800; line-height: 1.2; }
+.stone__hint { font-size: var(--text-sm); font-weight: 600; color: var(--ink-soft); }
+
+.stone--open .stone__disc { background: var(--go); color: #fff; animation: beckon 1.8s ease-in-out infinite; }
+.stone--open .stone__hint { color: var(--go-deep); font-weight: 800; }
+.stone--done .stone__disc { background: var(--star); }
+.stone--locked .stone__text { background: #eef1fa; color: var(--ink-faint); }
+.stone--locked .stone__hint { color: var(--ink-faint); }
+@keyframes beckon {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.07; }
+}
+
+/* Zad and Lulu at the foot of the path */
+.island__friends {
+  display: grid;
+  grid-template-columns: 84px 1fr 84px;
+  align-items: end;
+  gap: var(--s2);
+  direction: ltr;
+}
+.bubble {
+  position: relative;
+  align-self: center;
+  padding: var(--s3) var(--s4);
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-md);
+  background: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+[dir="rtl"] .bubble { direction: rtl; }

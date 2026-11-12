@@ -1,0 +1,78 @@
+/* SAKINA design tokens.
+   Every colour, size and timing used in the app is named here.
+   Change a value here and it changes everywhere. */
+
+:root {
+  /* Ink: the single outline colour that makes everything read as one cartoon world */
+  --ink: #1d2a4d;
+  --ink-soft: #4a587f;
+  --ink-faint: #8591b3;
+
+  /* Sky, from high altitude down to the horizon glow */
+  --sky-high: #17527a;
+  --sky-mid: #2f93b0;
+  --sky-low: #8fd6cf;
+  --sky-glow: #fdeec2;
+
+  /* Surfaces */
+  --cloud: #ffffff;
+  --paper: #fff9ec;
+  --paper-deep: #f6ebd0;
+
+  /* Island materials */
+  --grass: #6fcf7c;
+  --grass-deep: #3fa863;
+  --rock: #8a6fb0;
+  --rock-deep: #5f4a86;
+
+  /* Meaningful accents */
+  --star: #ffbf3c;        /* stars, rewards */
+  --star-deep: #e0932a;
+  --go: #2fbf8f;          /* primary actions, correct */
+  --go-deep: #1e936c;
+  --oops: #ff7a66;        /* gentle "try again" */
+  --oops-deep: #d9543f;
+  --quran: #1f8a70;       /* Qur'an source cards */
+  --hadith: #b0682c;      /* Hadith source cards */
+  --explain: #4a6fd6;     /* explanation cards */
+
+  /* Type */
+  --font-ui: "Baloo Bhaijaan 2", "Segoe UI", Tahoma, system-ui, sans-serif;
+  --font-scripture: "Amiri", "Traditional Arabic", "Scheherazade New", serif;
+
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.3125rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+
+  /* Space */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+
+  /* Shape */
+  --outline: 3px;
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 28px;
+  --r-pill: 999px;
+  --ledge: 5px;           /* the chunky bottom edge on pressable things */
+
+  /* Motion */
+  --ease-bounce: cubic-bezier(.34, 1.56, .64, 1);
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --t-fast: 140ms;
+  --t-med: 320ms;
+
+  /* Layout */
+  --tabbar-h: 72px;
+  --app-max: 520px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
