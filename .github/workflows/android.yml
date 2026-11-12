@@ -1,0 +1,107 @@
+name: Build Android APK
+
+# Builds the installable SAKINA APK whenever the app changes, or when started
+# by hand from the Actions tab ("Run workflow").
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'src/**'
+      - 'assets/**'
+      - 'android/**'
+      - '.github/workflows/android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed to publish the APK on the Releases page
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build release APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      # The fonts are open-licensed (SIL OFL). Packing them in the APK lets the
+      # app look right with no internet. If a download fails the build goes on
+      # and the app uses the phone's own fonts.
+      - name: Pack fonts for offline use
+        continue-on-error: true
+        run: |
+          mkdir -p assets/fonts
+          base=https://raw.githubusercontent.com/google/fonts/main/ofl
+          curl -fsSL --retry 3 -o assets/fonts/Amiri-Regular.ttf "$base/amiri/Amiri-Regular.ttf"
+          curl -fsSL --retry 3 -o assets/fonts/Amiri-Bold.ttf "$base/amiri/Amiri-Bold.ttf"
+          curl -fsSL --retry 3 -o assets/fonts/BalooBhaijaan2.ttf "$base/baloobhaijaan2/BalooBhaijaan2%5Bwght%5D.ttf"
+          ls -la assets/fonts
+
+      - name: Build the release APK
+        working-directory: android
+        env:
+          SAKINA_KEYSTORE_BASE64: ${{ secrets.SAKINA_KEYSTORE_BASE64 }}
+          SAKINA_KEYSTORE_PASSWORD: ${{ secrets.SAKINA_KEYSTORE_PASSWORD }}
+          SAKINA_KEY_ALIAS: ${{ secrets.SAKINA_KEY_ALIAS }}
+          SAKINA_KEY_PASSWORD: ${{ secrets.SAKINA_KEY_PASSWORD }}
+        run: |
+          # Empty secrets mean "use the keystore kept in android/signing".
+          [ -n "$SAKINA_KEYSTORE_PASSWORD" ] || unset SAKINA_KEYSTORE_PASSWORD
+          [ -n "$SAKINA_KEY_ALIAS" ] || unset SAKINA_KEY_ALIAS
+          [ -n "$SAKINA_KEY_PASSWORD" ] || unset SAKINA_KEY_PASSWORD
+          if [ -n "$SAKINA_KEYSTORE_BASE64" ]; then
+            echo "$SAKINA_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/sakina.jks"
+            export SAKINA_KEYSTORE_FILE="$RUNNER_TEMP/sakina.jks"
+          fi
+          gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Check the APK is real, signed and contains the app
+        run: |
+          apk=android/app/build/outputs/apk/release/app-release.apk
+          tools=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          ls -la "$apk"
+          "$tools/apksigner" verify --verbose --print-certs "$apk"
+          "$tools/aapt2" dump badging "$apk" | grep -E "^(package|sdkVersion|targetSdkVersion|application-label:|launchable-activity)"
+          unzip -l "$apk" | grep -E "assets/www/(index.html|src/main.js)"
+          unzip -l "$apk" | grep -c "assets/www/" | xargs echo "web files packed:"
+          cp "$apk" SAKINA.apk
+
+      - name: Save the APK as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SAKINA-apk-${{ github.run_number }}
+          path: SAKINA.apk
+          if-no-files-found: error
+
+      # Also publish it as a normal file so it can be downloaded straight to a
+      # phone, without unzipping an artifact:
+      #   https://github.com/<owner>/<repo>/releases/latest/download/SAKINA.apk
+      - name: Publish direct download on the Releases page
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="build-${{ github.run_number }}"
+          gh release create "$tag" SAKINA.apk \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
+            --title "SAKINA 0.2.${{ github.run_number }}" \
+            --notes "Android app built automatically from commit ${{ github.sha }}. Download SAKINA.apk on your phone and open it to install." \
+            --latest

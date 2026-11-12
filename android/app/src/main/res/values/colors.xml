@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Keep in step with src/styles/tokens.css -->
+    <color name="sky_high">#17527A</color>
+    <color name="sky_mid">#2F93B0</color>
+    <color name="paper">#FFF9EC</color>
+    <color name="ic_launcher_background">#2F93B0</color>
+</resources>

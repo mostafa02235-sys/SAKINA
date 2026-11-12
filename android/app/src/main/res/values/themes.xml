@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shown the instant the app is tapped, until the first screen is ready. -->
+    <style name="Theme.Sakina.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/sky_mid</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Sakina</item>
+    </style>
+
+    <style name="Theme.Sakina" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/sky_high</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

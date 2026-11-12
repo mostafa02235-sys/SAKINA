@@ -1,0 +1,74 @@
+// The SAKINA Android app.
+//
+// The app's screens are the web app in the repository root (index.html, src/, assets/).
+// The syncWebApp task copies them into the APK on every build, so there is one
+// source of truth: change the web app, push, and the next APK contains the change.
+
+plugins {
+    id 'com.android.application'
+}
+
+// Each GitHub Actions run gets a higher number, so a new APK installs over the old one.
+def buildNumber = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+
+android {
+    namespace 'io.github.mostafa02235.sakina'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'io.github.mostafa02235.sakina'
+        minSdk 24
+        targetSdk 35
+        versionCode buildNumber
+        versionName "0.2.${buildNumber}"
+    }
+
+    signingConfigs {
+        release {
+            // Uses GitHub secrets when they are set, otherwise the keystore kept in android/signing.
+            storeFile file(System.getenv('SAKINA_KEYSTORE_FILE') ?: '../signing/sakina-release.jks')
+            storePassword System.getenv('SAKINA_KEYSTORE_PASSWORD') ?: 'sakina-android'
+            keyAlias System.getenv('SAKINA_KEY_ALIAS') ?: 'sakina'
+            keyPassword System.getenv('SAKINA_KEY_PASSWORD') ?: 'sakina-android'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            applicationIdSuffix '.debug'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation 'androidx.activity:activity:1.9.3'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.core:core-splashscreen:1.0.1'
+    implementation 'androidx.webkit:webkit:1.12.1'
+}
+
+// Copy the web app into the APK's assets (app/src/main/assets/www, not kept in git).
+def syncWebApp = tasks.register('syncWebApp', Sync) {
+    from(rootProject.file('..')) {
+        include 'index.html'
+        include 'src/**'
+        include 'assets/**'
+    }
+    into layout.projectDirectory.dir('src/main/assets/www')
+}
+tasks.named('preBuild') {
+    dependsOn syncWebApp
+}
