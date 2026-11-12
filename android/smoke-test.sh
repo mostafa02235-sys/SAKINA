@@ -23,8 +23,8 @@ wait_for_ready() {
 no_crash() {
   if adb logcat -d | grep -E "FATAL EXCEPTION|ANR in $PKG"; then
     echo "::error::SAKINA crashed"
-    adb logcat -d | grep -A 30 "FATAL EXCEPTION" | head -80
-    adb logcat -d | grep -A 45 "ANR in $PKG" | head -120
+    adb logcat -d | grep -A 30 "FATAL EXCEPTION" | head -80 || true
+    adb logcat -d | grep -A 45 "ANR in $PKG" | head -120 || true
     adb shell dumpsys gfxinfo "$PKG" | head -40 || true
     return 1
   fi
