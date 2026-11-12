@@ -28,6 +28,10 @@ two minutes) the APK is available in two places:
 - **Releases** page: `SAKINA.apk`, the direct download used above.
 - The workflow run page, under **Artifacts** (a zip containing the APK).
 
+After each build the workflow also installs the APK on an Android emulator
+and checks that it opens, survives the Back button and a full restart, and
+still has its saved data (`android/smoke-test.sh`).
+
 The Android project lives in `android/`. It is a small native app that shows
 the SAKINA screens from files packed inside the APK, so the app works without
 internet. You do not edit anything in `android/` to change the app itself:
