@@ -54,6 +54,8 @@ android {
 }
 
 dependencies {
+    // Keeps every Kotlin library that the AndroidX libraries bring in on one version.
+    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.9.24')
     implementation 'androidx.activity:activity:1.9.3'
     implementation 'androidx.core:core:1.13.1'
     implementation 'androidx.core:core-splashscreen:1.0.1'
