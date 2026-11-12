@@ -85,6 +85,8 @@ export function mount(root) {
   const regionTotals = totals.regions[region.index];
   const next = nextUp(save);
   let standingOn = partyHome(region, save);
+  // Remember where the party stands from the very first visit.
+  if (!save.partyAt) store.update((s) => { s.partyAt = standingOn.id; });
   let walking = false;
   let alive = true; // false once the player has left this screen
 
