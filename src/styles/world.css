@@ -126,7 +126,7 @@
   color: var(--ink-soft);
 }
 
-/* Zad and Lulu: one group that stands on an island and walks between them.
+/* Mr. Raccoon and Mr. Qattout: one group that stands on an island and walks between them.
    world.js sets its size and position. */
 .party {
   position: absolute;
@@ -241,3 +241,120 @@
   .hud__stats { gap: var(--s1); }
   .hud .chip { padding: 0 7px; gap: 3px; font-size: var(--text-xs); }
 }
+
+/* =====================================================================
+   Phase 3: many worlds. Each world (region) has its own sky.
+   ===================================================================== */
+.world[data-biome="dawn"] { --sky-high: #4d3a78; --sky-mid: #c2648c; --sky-low: #f6b38a; --sky-glow: #ffe9c2; }
+.world[data-biome="lagoon"] { --sky-high: #0f5f73; --sky-mid: #2aa3a8; --sky-low: #9fe3d6; --sky-glow: #eafbe0; }
+.world[data-biome="desert"] { --sky-high: #2c5f8a; --sky-mid: #6fb0c9; --sky-low: #f3d9a0; --sky-glow: #fff0cc; }
+.world[data-biome="garden"] { --sky-high: #1f6e5c; --sky-mid: #3fae8a; --sky-low: #b6e6b0; --sky-glow: #f4f9d0; }
+.world[data-biome="orchard"] { --sky-high: #2f6f4a; --sky-mid: #74bd72; --sky-low: #dff0a8; --sky-glow: #fff6cf; }
+.world[data-biome="night"] { --sky-high: #141a3d; --sky-mid: #2a2f6b; --sky-low: #5a5fa8; --sky-glow: #c9b8f0; }
+.world[data-biome="spring"] { --sky-high: #1a6a8a; --sky-mid: #3fb0c8; --sky-low: #aee6e0; --sky-glow: #f0fbe6; }
+.world[data-biome="canyon"] { --sky-high: #6e3628; --sky-mid: #c9744f; --sky-low: #f2bf8a; --sky-glow: #ffe9c8; }
+.world[data-biome="palm"] { --sky-high: #1f6a6a; --sky-mid: #4fb39a; --sky-low: #cfe9a8; --sky-glow: #fff7cf; }
+.world[data-biome="aurora"] { --sky-high: #2a1f5c; --sky-mid: #5a3fa0; --sky-low: #7fcfc6; --sky-glow: #dff7e6; }
+.world[data-biome="harvest"] { --sky-high: #6e4f1c; --sky-mid: #d39a3c; --sky-low: #f6e3a0; --sky-glow: #fff8d6; }
+.world[data-biome="night"] .sun { background: radial-gradient(circle, #f4f1ff 0 26%, rgba(220, 214, 255, .35) 27% 44%, transparent 45%); }
+
+/* ---------- World gates: a strip to move between worlds ---------- */
+.gates {
+  position: sticky;
+  top: 56px;
+  z-index: 4;
+  display: flex;
+  gap: var(--s2);
+  padding: var(--s1) var(--s3) var(--s3);
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  background: linear-gradient(180deg, var(--sky-high) 70%, transparent);
+}
+.gates::-webkit-scrollbar { display: none; }
+.gate {
+  flex: none;
+  width: 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 6px 6px;
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  box-shadow: 0 4px 0 var(--ink);
+  scroll-snap-align: center;
+  text-align: center;
+}
+.gate:active { transform: translateY(4px); box-shadow: none; }
+.gate__art { position: relative; display: block; width: 62px; }
+.gate__art .island-art { width: 100%; }
+.gate__name { font-size: .72rem; font-weight: 800; line-height: 1.2; min-height: 2.4em; display: flex; align-items: center; }
+.gate__count { font-size: .7rem; font-weight: 700; color: var(--ink-soft); }
+.gate.is-current { background: var(--star); transform: translateY(2px); box-shadow: 0 2px 0 var(--ink); }
+.gate.is-locked { background: #e6e9f4; }
+.gate.is-locked .island-art { opacity: .4; }
+.gate__lock { position: absolute; inset: 0; display: grid; place-items: center; }
+
+/* ---------- The current world's banner ---------- */
+.world__banner {
+  position: relative;
+  z-index: 1;
+  margin: var(--s2) var(--s4) 0;
+  padding: var(--s3) var(--s4);
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  box-shadow: 0 var(--ledge) 0 var(--ink);
+  text-align: center;
+}
+.world__banner h1 { font-size: var(--text-lg); }
+.world__banner p { font-size: var(--text-sm); font-weight: 600; color: var(--ink-soft); }
+.world__banner .bar { margin: var(--s2) 0 2px; }
+.world__count { font-size: var(--text-xs) !important; }
+
+.isle__number {
+  position: absolute;
+  top: -14px; left: 50%;
+  translate: -50% 0;
+  min-width: 28px;
+  padding: 0 6px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-pill);
+  background: var(--star);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1.5;
+}
+.isle__sign { padding-top: 12px; }
+.pips { flex-wrap: wrap; justify-content: center; max-width: 150px; }
+.pip { width: 9px; height: 9px; border-width: 1.5px; }
+
+/* ---------- The party: the player's avatar with the two friends ---------- */
+.party__float {
+  width: 100%;
+  align-items: flex-end;
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  padding: 0 2%;
+}
+.party .character { width: 26%; }
+.party .avatar { width: 27%; margin-bottom: -7%; }
+.party__bubble {
+  position: absolute;
+  bottom: 104%;
+  left: 50%;
+  translate: -50% 0;
+  width: max-content;
+  max-width: 250px;
+  padding: var(--s2) var(--s3);
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-md);
+  background: #fff;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-align: center;
+  animation: rise var(--t-med) var(--ease-bounce);
+}
+[dir="rtl"] .party__bubble { direction: rtl; }

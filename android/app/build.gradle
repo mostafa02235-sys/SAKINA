@@ -1,6 +1,6 @@
 // The SAKINA Android app.
 //
-// The app's screens are the web app in the repository root (index.html, src/, assets/).
+// The app's screens are the web app in the repository root (index.html, src/, assets/, content/).
 // The syncWebApp task copies them into the APK on every build, so there is one
 // source of truth: change the web app, push, and the next APK contains the change.
 
@@ -68,6 +68,7 @@ def syncWebApp = tasks.register('syncWebApp', Sync) {
         include 'index.html'
         include 'src/**'
         include 'assets/**'
+        include 'content/**'
     }
     into layout.projectDirectory.dir('src/main/assets/www')
 }

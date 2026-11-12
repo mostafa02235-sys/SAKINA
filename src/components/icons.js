@@ -14,6 +14,7 @@ const SHAPES = {
   play: `<path d="M8 5.5v13l11-6.500z" fill="#fff" ${base}/>`,
   world: `<path d="M3 11.5q1 5 4.5 5.500l1 3 1.8-2.800q1.5 3 1.9 3.8 1.5-1.5 2-3.900l1.5 1.7 1-2.400q3.3-.5 4.3-4.900z" fill="#8a6fb0" ${base}/><ellipse cx="12" cy="11" rx="9.5" ry="3.2" fill="#6fcf7c" ${base}/><path d="M12 10.500V5.5" ${base}/><path d="M12 5.500l4 1.5-4 1.500z" fill="#ff7a66" ${base}/>`,
   friends: `<ellipse cx="12" cy="15.5" rx="5" ry="4.2" fill="#f7ab5e" ${base}/><circle cx="5.5" cy="11" r="2.2" fill="#f7ab5e" ${base}/><circle cx="9.3" cy="6.8" r="2.2" fill="#f7ab5e" ${base}/><circle cx="14.7" cy="6.8" r="2.2" fill="#f7ab5e" ${base}/><circle cx="18.5" cy="11" r="2.2" fill="#f7ab5e" ${base}/>`,
+  avatar: `<circle cx="12" cy="8" r="4.6" fill="#f1c9a5" ${base}/><path d="M3.5 21q0-7.5 8.5-7.5t8.5 7.5z" fill="#2fbf8f" ${base}/><path d="M7.6 7.4q.4-4.2 4.4-4.2t4.4 4.2q-2.2-1.8-4.4-1.8t-4.4 1.8z" fill="#3b2a20" ${base}/>`,
   journey: `<path d="M6 21V3.5" ${base}/><path d="M6 4.500h11.500l-2.8 4 2.8 4H6z" fill="#2fbf8f" ${base}/>`,
 };
 

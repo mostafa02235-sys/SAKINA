@@ -1,4 +1,4 @@
-// Zad the raccoon — SAKINA's curious explorer.
+// Mr. Raccoon the raccoon — SAKINA's curious explorer.
 // Recognisable by: the swept-back mask, the ringed tail, the three-spike
 // hair tuft and the pointed cheek fur.
 

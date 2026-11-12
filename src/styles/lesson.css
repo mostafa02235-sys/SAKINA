@@ -201,3 +201,68 @@
 @keyframes step-in { from { opacity: 0; transform: translateX(-24px); } }
 [dir="ltr"] .lesson__body > * { animation-name: step-in-ltr; }
 @keyframes step-in-ltr { from { opacity: 0; transform: translateX(24px); } }
+
+/* =====================================================================
+   Phase 3: lesson goal, verse lists, true/false, richer finish screen
+   ===================================================================== */
+.goal { display: flex; flex-direction: column; align-items: center; gap: var(--s2); padding-top: var(--s3); }
+.goal__me { width: 40%; max-width: 170px; }
+.goal__card {
+  width: 100%;
+  padding: var(--s4);
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-lg);
+  background: #fff;
+  box-shadow: 0 var(--ledge) 0 var(--ink);
+}
+.goal__card h1 { font-size: var(--text-lg); margin: var(--s2) 0; line-height: 1.4; }
+.goal__card p { font-weight: 600; line-height: 1.6; }
+.goal__level { display: flex; align-items: center; gap: var(--s2); margin-top: var(--s3); font-size: var(--text-sm); color: var(--ink-soft); }
+.goal__level .level { margin-inline-start: 0; }
+
+.basmala { padding-bottom: 0 !important; font-size: 1.35rem; color: var(--source-color); }
+.scripture--long { font-size: 1.3rem; line-height: 2; text-align: start; }
+.source .scripture + .source__meaning { margin-top: calc(var(--s2) * -1); }
+.source__notes { margin-top: var(--s2); font-size: var(--text-xs); color: var(--ink-soft); white-space: pre-line; }
+.source__meaning p { user-select: text; -webkit-user-select: text; }
+
+.quiz__statement { margin-bottom: var(--s3); font-size: var(--text-lg); font-weight: 700; }
+.quiz__prompt { position: relative; margin-bottom: var(--s3); font-size: 1.45rem; }
+.quiz__n {
+  display: inline-grid;
+  place-items: center;
+  width: 26px; height: 26px;
+  margin-inline-end: var(--s2);
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  vertical-align: middle;
+}
+.quiz__note {
+  margin-bottom: var(--s4);
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r-md);
+  background: #eaf0ff;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.quiz--tf .quiz__options { grid-template-columns: 1fr 1fr; }
+.quiz--tf .option { text-align: center; }
+.option--scripture { font-size: 1.4rem; line-height: 1.9; }
+
+.finish { padding-top: calc(var(--s6) + var(--safe-t)); }
+.finish__friends { align-items: flex-end; margin-top: var(--s2); }
+.finish__friends .character { width: 30%; max-width: 130px; }
+.finish__me { width: 32%; max-width: 140px; animation: ch-jump .7s var(--ease-out) infinite; }
+.finish__say {
+  padding: var(--s2) var(--s4);
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-md);
+  background: #fff;
+  font-weight: 600;
+}
+.finish__xp { display: grid; gap: 4px; width: 100%; font-size: var(--text-sm); font-weight: 800; }
+.finish__xp span:first-child { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: var(--text-md); }
+.finish__unlocks { width: 100%; }

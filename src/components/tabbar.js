@@ -1,16 +1,17 @@
-// The three main sections of the app, always one tap away.
+// The four main sections of the app, always one tap away.
 
 import { icon } from './icons.js';
 import { t } from '../core/i18n.js';
 
 const TABS = [
   { route: 'world', icon: 'world', label: 'tab.world' },
+  { route: 'avatar', icon: 'avatar', label: 'tab.avatar' },
   { route: 'friends', icon: 'friends', label: 'tab.friends' },
-  { route: 'journey', icon: 'journey', label: 'tab.journey' },
+  { route: 'profile', icon: 'journey', label: 'tab.profile' },
 ];
 
 // Screens that belong to a tab without being the tab itself.
-const PARENT = { island: 'world' };
+const PARENT = { island: 'world', journey: 'profile' };
 
 export function renderTabbar(el, routeName) {
   const hidden = routeName === 'lesson';

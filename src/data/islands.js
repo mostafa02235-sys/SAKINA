@@ -1,66 +1,85 @@
-// The floating islands of SAKINA, in the order the player travels through them.
+// The world's data: regions, islands and their lessons.
 //
-// To add an island: add an entry here, write its lessons in data/lessons/,
-// and (optionally) draw a landmark for it in world/landmarks.js.
-// An island with `planned: true` is shown in the sky as "coming soon".
+// Two levels of loading keep 230+ islands light:
+//   content/catalog.json        every region and island (names, looks, lesson ids).
+//                               Small; loaded once when the app starts.
+//   content/islands/<id>.json   one island's lesson texts. Loaded only when the
+//                               player opens that island, then kept for a while.
+//
+// The content files are produced by tools/build-content.mjs from published
+// sources. To add or change islands, edit tools/curriculum.mjs and run the tool.
 
 import { QURAN_LESSONS } from './lessons/quran.js';
 import { SUNNAH_LESSONS } from './lessons/sunnah.js';
 
-export const ISLANDS = [
-  {
-    id: 'quran',
-    name: { ar: 'جزيرة القرآن', en: 'Qur\'an Island' },
-    about: { ar: 'تعرَّف على كتاب الله وسوره القصيرة.', en: 'Get to know the Book of Allah and its short surahs.' },
-    landmark: 'academy',
-    colors: { grass: '#6fcf7c', grassDeep: '#3fa863', rock: '#8a6fb0', rockDeep: '#5f4a86' },
-    lessons: QURAN_LESSONS,
-  },
-  {
-    id: 'sunnah',
-    name: { ar: 'بستان السنّة', en: 'Sunnah Garden' },
-    about: { ar: 'تعلَّم من أحاديث النبي ﷺ الصحيحة.', en: 'Learn from the authentic hadith of the Prophet ﷺ.' },
-    landmark: 'garden',
-    colors: { grass: '#9ad36a', grassDeep: '#5faf4e', rock: '#b9815a', rockDeep: '#8a5a3c' },
-    lessons: SUNNAH_LESSONS,
-  },
-  {
-    id: 'prophets',
-    name: { ar: 'واحة الأنبياء', en: 'Oasis of the Prophets' },
-    about: { ar: 'قصص الأنبياء عليهم السلام.', en: 'Stories of the prophets, peace be upon them.' },
-    landmark: 'oasis',
-    colors: { grass: '#f2cf7a', grassDeep: '#d9a84c', rock: '#c98a6b', rockDeep: '#99604a' },
-    lessons: [],
-    planned: true,
-  },
-  {
-    id: 'daily',
-    name: { ar: 'ينابيع يوم المسلم', en: 'Daily Life Springs' },
-    about: { ar: 'الوضوء والصلاة وآداب اليوم.', en: 'Wudu, prayer and everyday manners.' },
-    landmark: 'spring',
-    colors: { grass: '#7fd6c2', grassDeep: '#45a996', rock: '#6f8fc0', rockDeep: '#4a6696' },
-    lessons: [],
-    planned: true,
-  },
-  {
-    id: 'knowledge',
-    name: { ar: 'منارة العلم', en: 'Lighthouse of Knowledge' },
-    about: { ar: 'تاريخ الإسلام وعلومه.', en: 'Islamic history and knowledge.' },
-    landmark: 'lighthouse',
-    colors: { grass: '#b7a6e8', grassDeep: '#8a74cf', rock: '#70608f', rockDeep: '#4c3f68' },
-    lessons: [],
-    planned: true,
-  },
-];
+export const REGIONS = [];
+export const ISLANDS = [];
+export const SURAHS = [];
 
-export function findIsland(id) {
-  return ISLANDS.find((island) => island.id === id);
+const islandById = new Map();
+const lessonHome = new Map(); // lesson id -> { island, index }
+
+// Lessons written by hand (Phase 1). They sit at the start of their islands.
+const HAND_WRITTEN = new Map([...QURAN_LESSONS, ...SUNNAH_LESSONS].map((lesson) => [lesson.id, lesson]));
+
+export async function loadCatalog() {
+  const response = await fetch('content/catalog.json');
+  if (!response.ok) throw new Error(`catalog: ${response.status}`);
+  const catalog = await response.json();
+
+  SURAHS.push(...catalog.surahs);
+  catalog.regions.forEach((region, index) => REGIONS.push({ ...region, index, islands: [] }));
+  const regionById = new Map(REGIONS.map((region) => [region.id, region]));
+
+  catalog.islands.forEach((raw, order) => {
+    const region = regionById.get(raw.r);
+    const island = { ...raw, region, order, place: region.islands.length };
+    region.islands.push(island);
+    ISLANDS.push(island);
+    islandById.set(island.id, island);
+    island.ids.forEach((id, index) => lessonHome.set(id, { island, index }));
+  });
 }
 
+export function findIsland(id) {
+  return islandById.get(id) ?? null;
+}
+
+export function findRegion(id) {
+  return REGIONS.find((region) => region.id === id) ?? null;
+}
+
+/** Which island a lesson belongs to, and its position there. */
 export function findLesson(lessonId) {
-  for (const island of ISLANDS) {
-    const index = island.lessons.findIndex((lesson) => lesson.id === lessonId);
-    if (index !== -1) return { island, lesson: island.lessons[index], index };
-  }
-  return null;
+  return lessonHome.get(lessonId) ?? null;
+}
+
+export function totalLessons() {
+  return lessonHome.size;
+}
+
+const loaded = new Map(); // island id -> Promise of its content
+const KEEP = 6;
+
+/**
+ * An island's lessons and texts.
+ * @returns {Promise<{ lessons: object[], pool: object[] }>} lessons in order; pool = all texts of the island
+ */
+export function loadIsland(id) {
+  if (loaded.has(id)) return loaded.get(id);
+  const island = islandById.get(id);
+  const promise = fetch(`content/islands/${id}.json`)
+    .then((response) => {
+      if (!response.ok) throw new Error(`island ${id}: ${response.status}`);
+      return response.json();
+    })
+    .then((file) => {
+      const built = new Map(file.lessons.map((lesson) => [lesson.id, lesson]));
+      const lessons = island.ids.map((lessonId) => built.get(lessonId) ?? HAND_WRITTEN.get(lessonId)).filter(Boolean);
+      return { lessons, pool: file.items ?? [] };
+    });
+  promise.catch(() => loaded.delete(id)); // a failed load can be tried again
+  loaded.set(id, promise);
+  if (loaded.size > KEEP) loaded.delete(loaded.keys().next().value);
+  return promise;
 }

@@ -9,6 +9,7 @@ on:
       - 'index.html'
       - 'src/**'
       - 'assets/**'
+      - 'content/**'
       - 'android/**'
       - '.github/workflows/android.yml'
   workflow_dispatch:

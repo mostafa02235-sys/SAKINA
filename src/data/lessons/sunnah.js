@@ -3,11 +3,13 @@
 export const SUNNAH_LESSONS = [
   {
     id: 'sunnah-intentions',
+    objective: { ar: 'أن تعرف معنى السنّة وحديث «إنما الأعمال بالنيات».', en: 'Know what the Sunnah is and the hadith \"Actions are only by intentions\".' },
+    level: 1,
     title: { ar: 'النيّة أوّلًا', en: 'Intentions first' },
     steps: [
       {
         type: 'talk', who: 'raccoon', mood: 'curious',
-        text: { ar: 'لولو، ما معنى «السنّة»؟', en: 'Lulu, what does "the Sunnah" mean?' },
+        text: { ar: 'مستر قطّوط، ما معنى «السنّة»؟', en: 'Mr. Qattout, what does "the Sunnah" mean?' },
       },
       {
         type: 'talk', who: 'cat', mood: 'happy',
@@ -67,11 +69,21 @@ export const SUNNAH_LESSONS = [
         answer: 2,
         why: { ar: 'صحيح البخاري ١.', en: 'Sahih al-Bukhari 1.' },
       },
+      {
+        type: 'quiz', tf: true,
+        question: { ar: 'صحيح أم خطأ؟', en: 'True or false?' },
+        statement: { ar: 'النيّة تكون في القلب.', en: 'The intention is in the heart.' },
+        options: [{ ar: 'صحيح', en: 'True' }, { ar: 'خطأ', en: 'False' }],
+        answer: 0,
+        why: { ar: 'النيّة ما تقصده في قلبك.', en: 'The intention is what you mean in your heart.' },
+      },
     ],
   },
 
   {
     id: 'sunnah-pillars',
+    objective: { ar: 'أن تعرف أركان الإسلام الخمسة من حديث ابن عمر رضي الله عنهما.', en: 'Know the five pillars of Islam from the hadith of Ibn Umar.' },
+    level: 1,
     title: { ar: 'أركان الإسلام الخمسة', en: 'The five pillars of Islam' },
     steps: [
       {
@@ -147,6 +159,14 @@ export const SUNNAH_LESSONS = [
           ar: 'الأركان: الشهادتان، الصلاة، الزكاة، صوم رمضان، الحجّ.',
           en: 'The pillars: the testimonies, prayer, zakah, fasting Ramadan, and Hajj.',
         },
+      },
+      {
+        type: 'quiz', tf: true,
+        question: { ar: 'صحيح أم خطأ؟', en: 'True or false?' },
+        statement: { ar: 'أركان الإسلام سبعة.', en: 'Islam has seven pillars.' },
+        options: [{ ar: 'صحيح', en: 'True' }, { ar: 'خطأ', en: 'False' }],
+        answer: 1,
+        why: { ar: '«بُني الإسلام على خمس».', en: '"Islam is built on five."' },
       },
     ],
   },

@@ -7,18 +7,19 @@
 import { startRouter, parseRoute, go } from './core/router.js';
 import { applyDocumentLanguage, t } from './core/i18n.js';
 import { applyMotionPreference, reducedMotion } from './core/feel.js';
-import { findLesson } from './data/islands.js';
+import { findLesson, loadCatalog } from './data/islands.js';
 import { renderTabbar } from './components/tabbar.js';
 import * as world from './screens/world.js';
 import * as island from './screens/island.js';
 import * as lesson from './screens/lesson.js';
 import * as friends from './screens/friends.js';
-import * as journey from './screens/journey.js';
+import * as avatar from './screens/avatar.js';
+import * as profile from './screens/profile.js';
 
-const SCREENS = { world, island, lesson, friends, journey };
+const SCREENS = { world, island, lesson, friends, avatar, profile, journey: profile };
 
 // How deep each screen is in the world: moving deeper zooms in, moving back zooms out.
-const DEPTH = { world: 0, friends: 0, journey: 0, island: 1, lesson: 2 };
+const DEPTH = { world: 0, friends: 0, avatar: 0, profile: 0, journey: 0, island: 1, lesson: 2 };
 
 // Was there a saved game when the app opened? (Reported once at start-up.)
 const returningPlayer = localStorage.getItem('sakina.save.v1') != null;
@@ -84,9 +85,15 @@ window.sakinaBack = () => {
 };
 
 document.documentElement.classList.toggle('no-view-transitions', !document.startViewTransition);
-startRouter(show);
 
-// The first screen is drawn: take the loading screen away.
-window.sakinaReady = true;
-console.info(`SAKINA ready: screen=${currentName} returning=${returningPlayer}`);
-document.getElementById('boot')?.remove();
+// The list of worlds and islands is needed before anything can be drawn.
+// If it cannot be read, the loading screen turns into its "try again" message.
+loadCatalog().then(() => {
+  startRouter(show);
+  window.sakinaReady = true;
+  console.info(`SAKINA ready: screen=${currentName} returning=${returningPlayer}`);
+  document.getElementById('boot')?.remove();
+}).catch((error) => {
+  console.error(error);
+  document.getElementById('boot')?.classList.add('has-error');
+});

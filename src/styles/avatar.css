@@ -1,0 +1,44 @@
+/* The player's avatar and the "My Avatar" creator. Drawing: src/avatar/draw.js */
+
+.avatar { width: 100%; height: auto; overflow: visible; }
+.avatar .av-all, .avatar .av-head, .avatar .av-eyes { transform-box: view-box; }
+.avatar .av-all { animation: ch-bob 3.4s ease-in-out -0.6s infinite; transform-origin: 100px 248px; }
+.avatar .av-head { animation: ch-tilt 7s ease-in-out infinite; transform-origin: 100px 140px; }
+.avatar .av-eyes { animation: ch-blink 5.2s -1s infinite; transform-origin: 100px 90px; }
+.avatar.is-walking .av-all { animation: ch-walk-rock .44s ease-in-out infinite; }
+.avatar.is-still * { animation: none !important; }
+
+.creator { display: flex; flex-direction: column; min-height: 100%; background: var(--paper); }
+.creator__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s3);
+  direction: ltr;
+  padding: calc(var(--s4) + var(--safe-t)) var(--s4) var(--s2);
+  background: radial-gradient(circle at 50% 78%, var(--sky-glow) 0 34%, transparent 35%), linear-gradient(180deg, var(--sky-mid), var(--sky-low));
+  border-bottom: var(--outline) solid var(--ink);
+}
+.creator__preview { width: min(48%, 210px); touch-action: pan-y; }
+.creator__turn-next .icon { transform: scaleX(-1); }
+[dir="rtl"] .creator__stage .icon--back { transform: none; }
+[dir="rtl"] .creator__turn-next .icon--back { transform: scaleX(-1); }
+
+.creator__tabs {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: var(--outline) solid var(--ink);
+  background: var(--paper);
+}
+.creator__tab { min-height: 50px; padding: 4px 2px; border: 0; background: none; font-size: var(--text-sm); font-weight: 800; color: var(--ink-soft); line-height: 1.2; }
+.creator__tab + .creator__tab { border-inline-start: 2px solid #e3dcc6; }
+.creator__tab.is-active { background: var(--star); color: var(--ink); }
+
+.lookbar__actions--three { grid-template-columns: 1fr 1fr 1.2fr; gap: var(--s2); }
+
+@media (max-height: 700px) {
+  .creator__preview { width: min(34%, 150px); }
+}

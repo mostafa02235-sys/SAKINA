@@ -95,7 +95,7 @@
   50% { scale: 1.07; }
 }
 
-/* Zad and Lulu at the foot of the path */
+/* Mr. Raccoon and Mr. Qattout at the foot of the path */
 .island__friends {
   display: grid;
   grid-template-columns: 84px 1fr 84px;
@@ -114,3 +114,25 @@
   text-align: center;
 }
 [dir="rtl"] .bubble { direction: rtl; }
+
+/* ---------- Phase 3 ---------- */
+.island__region { font-weight: 700; color: var(--ink); opacity: .85; }
+.island__name { font-size: var(--text-xl); padding: 0 var(--s4); }
+.island__ground > .bar { margin-bottom: 2px; }
+.island__count { margin-bottom: var(--s4); font-size: var(--text-sm); font-weight: 700; color: var(--ink-soft); }
+.stone__title { font-size: var(--text-md); }
+.stone__meta { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2); }
+.loading { padding: var(--s5); font-weight: 700; text-align: center; list-style: none; color: var(--ink-soft); }
+
+/* Difficulty: three dots */
+.level { display: inline-flex; gap: 3px; margin-inline-start: auto; direction: ltr; }
+.level i { width: 9px; height: 9px; border: 1.5px solid var(--ink); border-radius: 50%; background: #fff; }
+.level i.on { background: var(--oops); }
+
+.island__friends { grid-template-columns: 72px 1fr 72px; }
+.island__me { width: 84px; margin: var(--s2) auto 0; }
+
+.island__name, .island__about, .stone__title, .isle__name { overflow-wrap: anywhere; }
+@media (max-width: 350px) { .island__name { font-size: var(--text-lg); } }
+.stone__text, .island__friends > * { min-width: 0; }
+.island { overflow-x: hidden; }

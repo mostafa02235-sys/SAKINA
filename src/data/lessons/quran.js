@@ -12,13 +12,15 @@ const HAFS = { ar: 'رواية حفص عن عاصم', en: 'Hafs reading' };
 export const QURAN_LESSONS = [
   {
     id: 'quran-meet',
+    objective: { ar: 'أن تعرف ما هو القرآن الكريم وعدد سوره وفضل تعلّمه.', en: 'Know what the Qur\'an is, how many surahs it has, and the virtue of learning it.' },
+    level: 1,
     title: { ar: 'تعرَّف على القرآن', en: 'Meet the Qur\'an' },
     steps: [
       {
         type: 'talk', who: 'raccoon', mood: 'curious',
         text: {
-          ar: 'لولو، ما هذا الكتاب المنير الذي يحبّه كلّ من في الجزيرة؟',
-          en: 'Lulu, what is this glowing book that everyone on the island loves?',
+          ar: 'مستر قطّوط، ما هذا الكتاب المنير الذي يحبّه كلّ من في الجزيرة؟',
+          en: 'Mr. Qattout, what is this glowing book that everyone on the island loves?',
         },
       },
       {
@@ -90,11 +92,21 @@ export const QURAN_LESSONS = [
           en: 'We learn the Qur\'an and then share it with others. (Sahih al-Bukhari 5027)',
         },
       },
+      {
+        type: 'quiz', tf: true,
+        question: { ar: 'صحيح أم خطأ؟', en: 'True or false?' },
+        statement: { ar: 'في القرآن الكريم ١١٤ سورة.', en: 'The Qur\'an has 114 surahs.' },
+        options: [{ ar: 'صحيح', en: 'True' }, { ar: 'خطأ', en: 'False' }],
+        answer: 0,
+        why: { ar: 'في القرآن ١١٤ سورة.', en: 'The Qur\'an has 114 surahs.' },
+      },
     ],
   },
 
   {
     id: 'quran-fatiha',
+    objective: { ar: 'أن تقرأ سورة الفاتحة وتعرف عدد آياتها ومعنى اسمها.', en: 'Read Surah Al-Fatiha and know how many ayat it has and what its name means.' },
+    level: 1,
     title: { ar: 'سورة الفاتحة', en: 'Surah Al-Fatiha' },
     steps: [
       {
@@ -168,11 +180,21 @@ export const QURAN_LESSONS = [
         answer: 2,
         why: { ar: 'سورة الفاتحة، الآية ٦.', en: 'Surah Al-Fatiha, ayah 6.' },
       },
+      {
+        type: 'quiz', tf: true,
+        question: { ar: 'صحيح أم خطأ؟', en: 'True or false?' },
+        statement: { ar: 'سورة الفاتحة عشر آيات.', en: 'Surah Al-Fatiha has ten ayat.' },
+        options: [{ ar: 'صحيح', en: 'True' }, { ar: 'خطأ', en: 'False' }],
+        answer: 1,
+        why: { ar: 'سورة الفاتحة سبع آيات.', en: 'Surah Al-Fatiha has seven ayat.' },
+      },
     ],
   },
 
   {
     id: 'quran-ikhlas',
+    objective: { ar: 'أن تقرأ سورة الإخلاص وتعرف موضوعها وفضلها.', en: 'Read Surah Al-Ikhlas and know its subject and its virtue.' },
+    level: 1,
     title: { ar: 'سورة الإخلاص', en: 'Surah Al-Ikhlas' },
     steps: [
       {
@@ -247,6 +269,14 @@ export const QURAN_LESSONS = [
         ],
         answer: 1,
         why: { ar: 'صحيح البخاري ٥٠١٣.', en: 'Sahih al-Bukhari 5013.' },
+      },
+      {
+        type: 'quiz', tf: true,
+        question: { ar: 'صحيح أم خطأ؟', en: 'True or false?' },
+        statement: { ar: 'سورة الإخلاص أربع آيات.', en: 'Surah Al-Ikhlas has four ayat.' },
+        options: [{ ar: 'صحيح', en: 'True' }, { ar: 'خطأ', en: 'False' }],
+        answer: 0,
+        why: { ar: 'سورة الإخلاص أربع آيات.', en: 'Surah Al-Ikhlas has four ayat.' },
       },
     ],
   },

@@ -1,4 +1,4 @@
-// Lulu the cat — Zad's quick-witted friend.
+// Mr. Qattout the cat — Mr. Raccoon's quick-witted friend.
 // Recognisable by: the tall ears, the patch over one eye, the three
 // forehead stripes, green almond eyes and the curled tail with a dipped tip.
 

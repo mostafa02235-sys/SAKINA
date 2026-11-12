@@ -1,4 +1,4 @@
-// "Friends": dress and colour Zad and Lulu.
+// "Friends": dress and colour Mr. Raccoon and Mr. Qattout, the player's two companions.
 //
 // Changes are tried on straight away but are only kept when the player taps
 // "Save look". "Restore" undoes unsaved changes; with nothing unsaved it brings
@@ -197,7 +197,7 @@ export function mount(root) {
     drawAll();
   });
 
-  // Swipe across the stage to switch between Zad and Lulu.
+  // Swipe across the stage to switch between Mr. Raccoon and Mr. Qattout.
   let startX = null;
   stage.addEventListener('pointerdown', (event) => { startX = event.clientX; });
   stage.addEventListener('pointerup', (event) => {
