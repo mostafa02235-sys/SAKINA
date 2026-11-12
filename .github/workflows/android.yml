@@ -105,3 +105,43 @@ jobs:
             --title "SAKINA 0.2.${{ github.run_number }}" \
             --notes "Android app built automatically from commit ${{ github.sha }}. Download SAKINA.apk on your phone and open it to install." \
             --latest
+
+  # Installs the APK on an Android emulator and checks that it really opens:
+  # first screen reached, survives Back and a restart, saved data still there.
+  smoke-test:
+    name: Launch test on an Android emulator
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v5
+
+      - name: Get the APK that was just built
+        uses: actions/download-artifact@v5
+        with:
+          name: SAKINA-apk-${{ github.run_number }}
+
+      - name: Allow the emulator to use hardware acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Install and launch SAKINA
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: false
+          script: bash android/smoke-test.sh SAKINA.apk
+
+      - name: Save screenshots from the emulator
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: emulator-screenshots-${{ github.run_number }}
+          path: smoke-*.png
+          if-no-files-found: ignore

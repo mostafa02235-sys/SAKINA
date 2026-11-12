@@ -20,6 +20,9 @@ const SCREENS = { world, island, lesson, friends, journey };
 // How deep each screen is in the world: moving deeper zooms in, moving back zooms out.
 const DEPTH = { world: 0, friends: 0, journey: 0, island: 1, lesson: 2 };
 
+// Was there a saved game when the app opened? (Reported once at start-up.)
+const returningPlayer = localStorage.getItem('sakina.save.v1') != null;
+
 const screenEl = document.getElementById('screen');
 const tabbarEl = document.getElementById('tabbar');
 
@@ -85,4 +88,5 @@ startRouter(show);
 
 // The first screen is drawn: take the loading screen away.
 window.sakinaReady = true;
+console.info(`SAKINA ready: screen=${currentName} returning=${returningPlayer}`);
 document.getElementById('boot')?.remove();

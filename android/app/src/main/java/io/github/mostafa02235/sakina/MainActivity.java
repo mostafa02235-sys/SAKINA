@@ -8,9 +8,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
 import android.webkit.RenderProcessGoneDetail;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -123,6 +126,16 @@ public class MainActivity extends ComponentActivity {
                 .setDomain(APP_HOST)
                 .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
                 .build();
+
+        // Messages from the app's own code go to the Android log (tag SAKINA),
+        // which is how the automatic test knows the first screen appeared.
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage message) {
+                Log.i("SAKINA", message.message() + " (" + message.sourceId() + ":" + message.lineNumber() + ")");
+                return true;
+            }
+        });
 
         web.setWebViewClient(new WebViewClient() {
             @Override
