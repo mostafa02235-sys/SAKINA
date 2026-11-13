@@ -1,5 +1,5 @@
 // The rules of progression: what is unlocked, how stars and XP are earned,
-// levels, and achievement badges. Screens ask these functions; they never
+// and levels. (Achievements, medals and challenges are in systems/rewards.js.) Screens ask these functions; they never
 // work it out themselves.
 //
 // Everything here is worked out from the list of completed lessons in the save,
@@ -7,8 +7,6 @@
 
 import { store } from '../core/store.js';
 import { ISLANDS, REGIONS, findLesson, totalLessons } from '../data/islands.js';
-import { REWARDS } from '../data/wardrobe.js';
-import { AVATAR_REWARDS } from '../data/avatar.js';
 
 export const MAX_STARS_PER_LESSON = 3;
 const XP_PER_LESSON = 10;
@@ -89,39 +87,51 @@ export function starsForScore(firstTryCorrect, questionCount) {
 
 const cache = new WeakMap();
 
-/** Everything countable about a save: lessons, stars, islands, regions, XP. */
+/** Everything countable about a save: lessons, stars, islands, worlds, XP. */
 export function stats(save = store.get()) {
   if (cache.has(save)) return cache.get(save);
   let lessons = 0;
   let stars = 0;
   let perfect = 0;
   let islands = 0;
-  let xp = 0;
+  let explored = 0;
+  let perfectIslands = 0;
+  let lessonXp = 0;
   const regions = [];
   for (const region of REGIONS) {
     let regionDone = 0;
+    let regionLessons = 0;
     for (const island of region.islands) {
       let done = 0;
+      let threes = 0;
       for (const id of island.ids) {
         const s = save.lessons[id]?.stars ?? 0;
         if (!s) continue;
         done += 1;
         stars += s;
-        if (s === 3) perfect += 1;
-        xp += XP_PER_LESSON + XP_PER_STAR * s;
+        if (s === 3) threes += 1;
+        lessonXp += XP_PER_LESSON + XP_PER_STAR * s;
       }
-      lessons += done;
+      regionLessons += done;
+      perfect += threes;
+      if (done > 0) explored += 1;
       if (done === island.ids.length) {
         regionDone += 1;
-        xp += XP_PER_ISLAND;
+        lessonXp += XP_PER_ISLAND;
+        if (threes === done) perfectIslands += 1;
       }
     }
+    lessons += regionLessons;
     islands += regionDone;
-    regions.push({ region, done: regionDone, total: region.islands.length });
+    regions.push({ region, done: regionDone, total: region.islands.length, lessons: regionLessons });
   }
   const result = {
-    lessons, stars, perfect, islands, xp, regions,
+    lessons, stars, perfect, islands, explored, perfectIslands, regions,
+    lessonXp, // XP from finished lessons and islands
+    xp: lessonXp + (save.bonusXp ?? 0), // plus XP given by challenges and achievements
     regionsDone: regions.filter((r) => r.done === r.total).length,
+    regionsOpen: REGIONS.filter((region) => regionUnlocked(region, save)).length,
+    regionsTouched: regions.filter((r) => r.lessons > 0).length,
     totalLessons: totalLessons(), totalIslands: ISLANDS.length,
     percent: Math.floor((lessons / Math.max(1, totalLessons())) * 100),
     streak: dayStreak(save),
@@ -159,47 +169,22 @@ export function level(save = store.get()) {
   return { number, name: rank.name, xp, start, next, toNext: next - xp, percent: Math.round(((xp - start) / (next - start)) * 100) };
 }
 
-/* ---------- Achievement badges ---------- */
-
-const badge = (id, icon, name, need, value, goal) => ({ id, icon, name, need, value, goal });
-export const BADGES = [
-  badge('first-step', 'star', { ar: 'الخطوة الأولى', en: 'First step' }, { ar: 'أكمل أوّل درس', en: 'Finish your first lesson' }, (s) => s.lessons, 1),
-  badge('ten-lessons', 'star', { ar: 'عشرة دروس', en: 'Ten lessons' }, { ar: 'أكمل ١٠ دروس', en: 'Finish 10 lessons' }, (s) => s.lessons, 10),
-  badge('fifty-lessons', 'star', { ar: 'خمسون درسًا', en: 'Fifty lessons' }, { ar: 'أكمل ٥٠ درسًا', en: 'Finish 50 lessons' }, (s) => s.lessons, 50),
-  badge('hundred-lessons', 'star', { ar: 'مئة درس', en: 'A hundred lessons' }, { ar: 'أكمل ١٠٠ درس', en: 'Finish 100 lessons' }, (s) => s.lessons, 100),
-  badge('five-hundred', 'star', { ar: 'خمسمئة درس', en: 'Five hundred lessons' }, { ar: 'أكمل ٥٠٠ درس', en: 'Finish 500 lessons' }, (s) => s.lessons, 500),
-  badge('first-island', 'world', { ar: 'أوّل جزيرة', en: 'First island' }, { ar: 'أكمل جزيرة كاملة', en: 'Finish a whole island' }, (s) => s.islands, 1),
-  badge('five-islands', 'world', { ar: 'خمس جزر', en: 'Five islands' }, { ar: 'أكمل ٥ جزر', en: 'Finish 5 islands' }, (s) => s.islands, 5),
-  badge('twenty-islands', 'world', { ar: 'عشرون جزيرة', en: 'Twenty islands' }, { ar: 'أكمل ٢٠ جزيرة', en: 'Finish 20 islands' }, (s) => s.islands, 20),
-  badge('hundred-islands', 'world', { ar: 'مئة جزيرة', en: 'A hundred islands' }, { ar: 'أكمل ١٠٠ جزيرة', en: 'Finish 100 islands' }, (s) => s.islands, 100),
-  badge('first-world', 'journey', { ar: 'عالَم كامل', en: 'A whole world' }, { ar: 'أكمل كل جزر عالَم واحد', en: 'Finish every island of one world' }, (s) => s.regionsDone, 1),
-  badge('perfect-ten', 'star', { ar: 'إتقان', en: 'Mastery' }, { ar: 'احصل على ٣ نجوم في ١٠ دروس', en: 'Get 3 stars in 10 lessons' }, (s) => s.perfect, 10),
-  badge('perfect-hundred', 'star', { ar: 'إتقان كبير', en: 'Great mastery' }, { ar: 'احصل على ٣ نجوم في ١٠٠ درس', en: 'Get 3 stars in 100 lessons' }, (s) => s.perfect, 100),
-  badge('streak-3', 'flame', { ar: 'ثلاثة أيام', en: 'Three days' }, { ar: 'تعلَّم ٣ أيام متتالية', en: 'Learn 3 days in a row' }, (s) => s.streak, 3),
-  badge('streak-7', 'flame', { ar: 'أسبوع كامل', en: 'A full week' }, { ar: 'تعلَّم ٧ أيام متتالية', en: 'Learn 7 days in a row' }, (s) => s.streak, 7),
-  badge('streak-30', 'flame', { ar: 'شهر كامل', en: 'A full month' }, { ar: 'تعلَّم ٣٠ يومًا متتاليًا', en: 'Learn 30 days in a row' }, (s) => s.streak, 30),
-];
-
-/** Every badge with how far along the player is. */
-export function badges(save = store.get()) {
-  const s = stats(save);
-  return BADGES.map((b) => {
-    const have = Math.min(b.value(s), b.goal);
-    return { ...b, have, earned: have >= b.goal };
-  });
-}
-
 /* ---------- Unlockable items ---------- */
 
-/** Wardrobe items for Mr. Raccoon and Mr. Qattout unlock with stars; avatar items with levels. */
+/**
+ * Is an item available to the player?
+ * Wardrobe items for the two friends unlock with stars, avatar items with levels,
+ * and prize items with the achievement or medal that gives them (`need`).
+ */
 export function isItemUnlocked(item, save = store.get()) {
+  if (item.need) return Boolean(save.earned[item.need.kind]?.[item.need.id]);
   if (item.level) return level(save).number >= item.level;
   return stats(save).stars >= (item.stars ?? 0);
 }
 
 /* ---------- Days ---------- */
 
-function dayKey(date) {
+export function dayKey(date) {
   const pad = (n) => String(n).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
@@ -219,38 +204,51 @@ export function dayStreak(save = store.get()) {
 
 /* ---------- Finishing a lesson ---------- */
 
+const DAY_MS = 86400000;
+
 /**
- * Record a finished lesson. Keeps the player's best star count.
+ * Record a finished lesson. Keeps the player's best star count and updates the
+ * counters that achievements and challenges are measured from.
  * Returns what changed so the lesson screen can celebrate it.
  */
 export function completeLesson(lessonId, stars) {
   const before = store.get();
   const { island } = findLesson(lessonId);
-  const was = { stats: stats(before), level: level(before).number, badges: badges(before), islandDone: isDone(island, before) };
+  const was = { xp: stats(before).lessonXp, islandDone: isDone(island, before), lessonDone: lessonStars(lessonId, before) > 0 };
   const wasOpen = new Set(ISLANDS.filter((i) => islandStatus(i, before) !== 'locked').map((i) => i.id));
   const regionsOpen = new Set(REGIONS.filter((r) => regionUnlocked(r, before)).map((r) => r.id));
 
   store.update((save) => {
+    const now = new Date();
+    const today = dayKey(now);
     const best = Math.max(stars, save.lessons[lessonId]?.stars ?? 0);
-    save.lessons[lessonId] = { stars: best, completedAt: new Date().toISOString() };
-    const today = dayKey(new Date());
-    if (!save.activeDays.includes(today)) save.activeDays.push(today);
+    save.lessons[lessonId] = { stars: best, completedAt: now.toISOString() };
+
+    const c = save.counters;
+    c.played += 1;
+    if (was.lessonDone) c.reviews += 1;
+    c.perfectRun = stars === 3 ? c.perfectRun + 1 : 0;
+    c.bestPerfectRun = Math.max(c.bestPerfectRun, c.perfectRun);
+    if (now.getHours() >= 4 && now.getHours() < 8) c.dawn += 1;
+    if (now.getDay() === 5) c.friday += 1;
+
+    if (!save.activeDays.includes(today)) {
+      const last = save.activeDays[save.activeDays.length - 1];
+      if (last && (new Date(`${today}T00:00`) - new Date(`${last}T00:00`)) / DAY_MS >= 7) c.comeback += 1;
+      save.activeDays.push(today);
+      c.days += 1;
+    }
     save.activeDays = save.activeDays.slice(-60);
+    c.bestStreak = Math.max(c.bestStreak, dayStreak(save));
     save.inProgress = null;
   });
 
   const after = store.get();
-  const now = { stats: stats(after), level: level(after).number };
   const islandFinished = !was.islandDone && isDone(island, after);
   return {
     stars,
-    xp: now.stats.xp - was.stats.xp,
-    levelUp: now.level > was.level ? now.level : null,
-    newBadges: badges(after).filter((b, i) => b.earned && !was.badges[i].earned),
-    newItems: [
-      ...REWARDS.filter((item) => item.stars > was.stats.stars && item.stars <= now.stats.stars),
-      ...AVATAR_REWARDS.filter((item) => item.level > was.level && item.level <= now.level),
-    ],
+    review: was.lessonDone,
+    xp: stats(after).lessonXp - was.xp,
     islandFinished,
     unlockedIsland: islandFinished ? ISLANDS.find((i) => !wasOpen.has(i.id) && i.region === island.region && islandStatus(i, after) === 'open') ?? null : null,
     unlockedRegion: islandFinished ? REGIONS.find((r) => !regionsOpen.has(r.id) && regionUnlocked(r, after)) ?? null : null,

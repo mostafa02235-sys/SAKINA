@@ -71,6 +71,23 @@ stars, Arabic and English, a real Android app with an automatic APK build.
 - Islands differ in colours, underside shape, decoration and one of 18
   landmarks; each world has its own sky.
 
+**Phase 4**
+- **Awards tab** with three sections: Challenges, Achievements, Medals.
+- **65 achievements** in 8 categories, each with its own badge, requirement,
+  progress bar and XP reward; four of them also unlock an avatar item.
+- **Challenges:** 4 daily, 4 weekly (the week runs Saturday to Friday) and
+  8 special ones. Progress is tracked automatically from real activity.
+- **43 medals** (bronze, silver, gold, special). Repeating a daily or weekly
+  challenge earns its bronze, then silver, then gold medal. Earned medals show
+  their date.
+- **Sound effects** made inside the app (no sound files): correct and
+  incorrect answers, lessons, islands, levels, achievements, medals, challenges,
+  navigation. Settings: on/off, volume, three categories, preview.
+- Everything is saved on the device and can never be awarded twice.
+
+To add an achievement, medal or challenge, add one line to
+`src/data/awards.js`. The rules that award them are in `src/systems/rewards.js`.
+
 ## Where things live
 
 ```
@@ -83,14 +100,16 @@ android/                the Android app project that packs all of this into an A
 docs/CONTENT.md         rules for Qur'an and hadith content — read before adding lessons
 src/
   main.js               starts the app, lists the screens
-  core/                 save data, navigation, language, motion and vibration, small helpers
+  core/                 save data, navigation, language, motion, vibration, sound, small helpers
   data/
     islands.js          loads the catalog and island files (islands load only when opened)
     lessons/            the five hand-written lessons from Phase 1
     avatar.js           every avatar option
+    awards.js           every achievement, medal and challenge
     wardrobe.js         colours, outfits, accessories, character names
     strings.js          every interface word in Arabic and English
   systems/progress.js   unlock, star, XP, level and badge rules
+  systems/rewards.js    measures progress and awards achievements, medals and challenges
   systems/engine.js     builds each lesson's steps and exercises from its texts
   avatar/               how the player's avatar is drawn
   characters/           how Zad and Lulu are drawn

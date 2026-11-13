@@ -1,0 +1,236 @@
+/* Awards: the collection screen, award pictures, the detail sheet and the celebration. */
+
+.award-art { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* ---------- Collection screen ---------- */
+.awards { display: flex; flex-direction: column; min-height: 100%; background: var(--paper); }
+.awards__head {
+  padding: calc(var(--s4) + var(--safe-t)) var(--s4) var(--s4);
+  background: linear-gradient(180deg, var(--sky-high), var(--sky-mid));
+  color: #fff;
+  text-align: center;
+}
+.awards__head h1 {
+  font-size: var(--text-xl);
+  text-shadow: 0 3px 0 var(--ink);
+  -webkit-text-stroke: 1px var(--ink);
+  paint-order: stroke fill;
+  margin-bottom: var(--s3);
+}
+.awards__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); }
+.awards__stats > div, .fact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--s2) 2px;
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-md);
+  background: #fff;
+  color: var(--ink);
+  text-decoration: none;
+  text-align: center;
+}
+.awards__stats b, .fact b { font-size: var(--text-lg); font-weight: 800; line-height: 1.2; }
+.awards__stats small, .fact small { font-size: var(--text-xs); color: var(--ink-soft); }
+.awards__stats span, .fact span { font-size: .72rem; font-weight: 700; color: var(--ink-soft); line-height: 1.25; }
+.awards__tabs { grid-template-columns: repeat(3, 1fr); border-top: var(--outline) solid var(--ink); }
+.awards__tabs .creator__tab { display: grid; place-items: center; text-decoration: none; }
+.awards__body { display: grid; gap: var(--s5); padding: var(--s4) var(--s4) var(--s6); }
+.awards__body h2 { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); }
+.clock {
+  padding: 2px var(--s3);
+  border-radius: var(--r-pill);
+  background: var(--paper-deep);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* ---------- Challenges ---------- */
+.challenges { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+.challenge {
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  gap: var(--s3);
+  align-items: center;
+  padding: var(--s3);
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-md);
+  background: #fff;
+  box-shadow: 0 4px 0 var(--ink);
+}
+.challenge.is-done { background: #e3f7ec; }
+.challenge__medal { padding: 0; border: 0; background: none; }
+.challenge__main { min-width: 0; display: grid; gap: 3px; }
+.challenge h3 { margin: 0; font-size: var(--text-md); font-weight: 800; line-height: 1.25; }
+.challenge__about { font-size: var(--text-sm); color: var(--ink-soft); line-height: 1.4; }
+.challenge__meta { display: flex; justify-content: space-between; gap: var(--s2); font-size: var(--text-xs); font-weight: 800; }
+.challenge__meta span { display: inline-flex; align-items: center; gap: 4px; }
+.challenge.is-done .challenge__meta span:first-child { color: var(--go-deep); }
+.challenge__meta .icon--check path { stroke: var(--go-deep); }
+.challenge__reward { font-size: var(--text-xs); font-weight: 700; color: var(--ink-soft); overflow-wrap: anywhere; }
+
+/* ---------- Achievement and medal tiles ---------- */
+.awards-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); }
+.award {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  padding: var(--s2) 4px var(--s3);
+  border: var(--outline) dashed var(--ink-faint);
+  border-radius: var(--r-md);
+  background: #f3f5fb;
+  text-align: center;
+}
+.award .award-art { width: 74%; }
+.award .award-art--medal { width: 62%; }
+.award.is-earned { border: var(--outline) solid var(--ink); background: #fff; box-shadow: 0 4px 0 var(--ink); }
+.award:active { transform: translateY(2px); }
+.award__name { font-size: var(--text-xs); font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+.award__note { font-size: .68rem; font-weight: 700; color: var(--go-deep); }
+.award .bar { width: 80%; height: 8px; margin-top: auto; }
+
+.rarity { padding: 1px var(--s3); border: 2px solid var(--ink); border-radius: var(--r-pill); font-size: var(--text-sm); }
+.rarity--bronze { background: #f0c39a; }
+.rarity--silver { background: #eef1f8; }
+.rarity--gold { background: #ffe28a; }
+.rarity--special { background: #ecd9fb; }
+
+/* ---------- Detail sheet ---------- */
+.sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(29, 42, 77, .55);
+  animation: fade-in var(--t-fast) ease-out;
+}
+.sheet__card {
+  position: relative;
+  width: 100%;
+  max-width: var(--app-max);
+  max-height: 88%;
+  overflow-y: auto;
+  padding: var(--s5) var(--s5) calc(var(--s5) + var(--safe-b));
+  border: var(--outline) solid var(--ink);
+  border-bottom: 0;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: var(--paper);
+  text-align: center;
+  animation: rise var(--t-med) var(--ease-bounce);
+}
+.sheet__close { position: absolute; top: var(--s3); inset-inline-end: var(--s3); }
+.sheet__art { width: 132px; margin: 0 auto var(--s2); }
+.sheet__art.is-earned { animation: award-pop .6s var(--ease-bounce); }
+.sheet__kind { font-size: var(--text-sm); font-weight: 800; color: var(--ink-soft); }
+.sheet h2 { font-size: var(--text-xl); margin: var(--s1) 0 var(--s2); }
+.sheet__need { margin: var(--s4) 0 var(--s3); padding: var(--s3) var(--s4); border-radius: var(--r-md); background: #fff; text-align: start; }
+.sheet__need .bar { margin: var(--s2) 0 2px; }
+.sheet__count { font-size: var(--text-sm); font-weight: 800; }
+.sheet__state { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; }
+.sheet__state .icon--check path { stroke: var(--go-deep); }
+.sheet__reward { margin-top: var(--s2); font-size: var(--text-sm); font-weight: 700; color: var(--ink-soft); }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes award-pop { 0% { transform: scale(.3) rotate(-18deg); } 100% { transform: none; } }
+
+/* ---------- Celebration ---------- */
+.celebrate {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: var(--s5);
+  background: rgba(23, 82, 122, .88);
+  overflow: hidden;
+  animation: fade-in var(--t-med) ease-out;
+}
+.celebrate__card {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  padding: var(--s5) var(--s4) var(--s4);
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-lg);
+  background: var(--paper);
+  box-shadow: 0 var(--ledge) 0 var(--ink);
+  text-align: center;
+  animation: rise var(--t-med) var(--ease-bounce);
+}
+.celebrate__kicker {
+  display: inline-block;
+  padding: 2px var(--s4);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-pill);
+  background: var(--star);
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+.celebrate__art { position: relative; width: 150px; margin: var(--s3) auto var(--s2); animation: award-pop .7s var(--ease-bounce); }
+.celebrate__art::before {
+  content: "";
+  position: absolute;
+  inset: -22%;
+  z-index: -1;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 191, 60, .5) 0 12deg, transparent 12deg 30deg);
+  animation: rays 9s linear infinite;
+}
+.celebrate__art .award-art--medal { width: 78%; margin: 0 auto; }
+.celebrate__avatar { width: 80%; margin: 0 auto; animation: ch-jump .7s var(--ease-out) infinite; }
+.celebrate__title { font-size: var(--text-xl); margin-bottom: var(--s1); }
+.celebrate__text { font-weight: 600; line-height: 1.5; }
+.celebrate__reward { margin: var(--s2) 0 0; font-weight: 800; color: var(--go-deep); }
+.celebrate .btn { margin-top: var(--s4); }
+.celebrate__skip { margin-top: var(--s4); padding: var(--s2); border: 0; background: none; font-weight: 700; color: var(--ink-soft); text-decoration: underline; }
+@keyframes rays { to { transform: rotate(360deg); } }
+
+.celebrate__confetti { position: absolute; inset: 0; pointer-events: none; }
+.celebrate__confetti i {
+  position: absolute;
+  top: -20px;
+  left: var(--x);
+  width: 10px; height: 16px;
+  border-radius: 3px;
+  background: var(--c);
+  transform: rotate(var(--r));
+  animation: confetti 2.6s var(--d) ease-in infinite;
+}
+@keyframes confetti {
+  0% { translate: 0 0; rotate: 0deg; opacity: 1; }
+  100% { translate: 0 105vh; rotate: 540deg; opacity: .9; }
+}
+
+/* ---------- Answer feedback in lessons ---------- */
+.option.is-correct { animation: answer-pop .45s var(--ease-bounce); }
+.option.is-wrong { animation: answer-soft .5s ease-in-out; }
+@keyframes answer-pop { 40% { transform: scale(1.04); } }
+@keyframes answer-soft { 30% { transform: translateX(-3px); } 70% { transform: translateX(3px); } }
+.feedback__title { display: flex; align-items: center; gap: var(--s2); }
+.feedback__mark { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border: 2px solid var(--ink); border-radius: 50%; }
+.feedback--right .feedback__mark { background: var(--go); animation: award-pop .5s var(--ease-bounce); }
+.feedback--wrong .feedback__mark { background: var(--oops); }
+.feedback__answer { font-weight: 700; }
+.feedback__scripture { font-family: var(--font-scripture); font-size: 1.25rem; font-weight: 400; }
+.feedback__again { font-size: var(--text-sm); color: var(--ink-soft); }
+
+/* ---------- Profile: awards summary and sound settings ---------- */
+.group h2 { display: flex; align-items: center; gap: var(--s2); }
+.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); margin-bottom: var(--s3); }
+.latest__title { margin-top: var(--s3); }
+.latest { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--s1); margin: var(--s2) 0 var(--s3); }
+.latest__item { display: flex; flex-direction: column; align-items: center; color: var(--ink); text-decoration: none; text-align: center; }
+.latest__item span { font-size: .6rem; font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+.group > .btn { margin-bottom: var(--ledge); }
+
+.slider { display: grid; gap: var(--s2); padding: var(--s3) var(--s4); border: var(--outline) solid var(--ink); border-radius: var(--r-md); background: #fff; font-weight: 800; }
+.slider span { display: flex; justify-content: space-between; }
+.slider input { width: 100%; height: 30px; accent-color: var(--go); direction: ltr; }
+.is-off { opacity: .5; }
+.previews .tile { min-height: 44px; padding: var(--s1) var(--s3); font-size: var(--text-sm); }

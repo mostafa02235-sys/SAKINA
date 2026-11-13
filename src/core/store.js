@@ -8,7 +8,7 @@
 
 const SAVE_KEY = 'sakina.save.v1';
 const BACKUP_KEY = 'sakina.save.backup';
-const SAVE_VERSION = 3;
+const SAVE_VERSION = 4;
 
 const HEX = /^#[0-9a-f]{6}$/i;
 
@@ -35,6 +35,52 @@ function cleanAvatar(avatar) {
   return out;
 }
 
+export const DEFAULT_SOUND = { on: true, volume: 0.7, answers: true, rewards: true, ui: true };
+
+// Things that cannot be worked out from the list of finished lessons.
+const DEFAULT_COUNTERS = {
+  played: 0, // lessons completed, reviews included
+  reviews: 0, // finished lessons played again
+  correct: 0, // questions answered correctly
+  perfectRun: 0, // 3-star lessons in a row, right now
+  bestPerfectRun: 0,
+  bestStreak: 0, // longest run of days in a row
+  days: 0, // days with at least one finished lesson
+  dawn: 0, // lessons finished between 4 and 8 in the morning
+  friday: 0, // lessons finished on a Friday
+  comeback: 0, // returns after a week or more away
+};
+
+function defaultChallenges() {
+  return {
+    daily: { key: null, base: {}, done: [] }, // key = the day these belong to
+    weekly: { key: null, base: {}, done: [], region: null }, // key = the Saturday the week began
+    special: {}, // challenge id -> date completed
+    counts: {}, // challenge id -> times completed (this is what medals are earned from)
+    totals: { daily: 0, weekly: 0, fullDays: 0 },
+    fullDayKey: null,
+  };
+}
+
+const count = (value) => (Number.isFinite(value) && value > 0 ? Math.floor(value) : 0);
+const dateMap = (map) => Object.fromEntries(Object.entries(map ?? {}).filter(([id, date]) => /^[\w:.-]{1,40}$/.test(id) && typeof date === 'string'));
+const numberMap = (map) => Object.fromEntries(Object.entries(map ?? {}).filter(([id]) => /^[\w:.*-]{1,40}$/.test(id)).map(([id, n]) => [id, count(n)]));
+const idList = (list) => (Array.isArray(list) ? list.filter((id) => typeof id === 'string').slice(0, 20) : []);
+
+function cleanChallenges(saved) {
+  const base = defaultChallenges();
+  if (!saved || typeof saved !== 'object') return base;
+  const period = (p) => ({ key: typeof p?.key === 'string' ? p.key : null, base: numberMap(p?.base), done: idList(p?.done) });
+  return {
+    daily: period(saved.daily),
+    weekly: { ...period(saved.weekly), region: typeof saved.weekly?.region === 'string' ? saved.weekly.region : null },
+    special: dateMap(saved.special),
+    counts: numberMap(saved.counts),
+    totals: { daily: count(saved.totals?.daily), weekly: count(saved.totals?.weekly), fullDays: count(saved.totals?.fullDays) },
+    fullDayKey: typeof saved.fullDayKey === 'string' ? saved.fullDayKey : null,
+  };
+}
+
 function defaultSave() {
   return {
     version: SAVE_VERSION,
@@ -42,6 +88,7 @@ function defaultSave() {
       lang: null, // null = follow the device language until the player chooses
       motion: 'full', // 'full' | 'reduced'
       haptics: true,
+      sound: { ...DEFAULT_SOUND },
     },
     lessons: {}, // lessonId -> { stars: 1..3, completedAt: ISO date }
     activeDays: [], // 'YYYY-MM-DD' strings, most recent last
@@ -52,6 +99,10 @@ function defaultSave() {
     profile: { name: '' }, // the player's chosen name
     avatar: { ...DEFAULT_AVATAR },
     inProgress: null, // an unfinished lesson: { lessonId, position, right, retries: [step numbers] }
+    counters: { ...DEFAULT_COUNTERS },
+    bonusXp: 0, // XP given by challenges and achievements (lesson XP is worked out from `lessons`)
+    earned: { achievements: {}, medals: {} }, // id -> date earned; an entry is never removed
+    challenges: defaultChallenges(),
   };
 }
 
@@ -90,6 +141,12 @@ function normalise(saved) {
   if (!['ar', 'en', null].includes(prefs.lang)) prefs.lang = null;
   if (!['full', 'reduced'].includes(prefs.motion)) prefs.motion = 'full';
   prefs.haptics = prefs.haptics !== false;
+  const sound = { ...DEFAULT_SOUND, ...(typeof prefs.sound === 'object' && prefs.sound ? prefs.sound : {}) };
+  prefs.sound = {
+    on: sound.on !== false,
+    volume: Number.isFinite(sound.volume) ? Math.min(1, Math.max(0, sound.volume)) : DEFAULT_SOUND.volume,
+    answers: sound.answers !== false, rewards: sound.rewards !== false, ui: sound.ui !== false,
+  };
 
   const lessons = {};
   for (const [id, entry] of Object.entries(saved.lessons ?? {})) {
@@ -109,6 +166,12 @@ function normalise(saved) {
     profile: { name: typeof saved.profile?.name === 'string' ? saved.profile.name.slice(0, 24) : '' },
     avatar: cleanAvatar(saved.avatar),
     inProgress: cleanProgress(saved.inProgress),
+    // Saves from before achievements existed start their counters from what is known.
+    counters: Object.fromEntries(Object.keys(DEFAULT_COUNTERS).map((key) => [key, count(saved.counters?.[key])
+      || (saved.counters ? 0 : key === 'played' ? Object.keys(lessons).length : key === 'days' ? (saved.activeDays?.length ?? 0) : 0)])),
+    bonusXp: count(saved.bonusXp),
+    earned: { achievements: dateMap(saved.earned?.achievements), medals: dateMap(saved.earned?.medals) },
+    challenges: cleanChallenges(saved.challenges),
   };
 }
 

@@ -75,6 +75,11 @@ const HEADWEAR = {
     <ellipse cx="100" cy="58" rx="68" ry="13" fill="${c}" ${line}/>
     <path d="M64 58 C64 30 80 20 100 20 C120 20 136 30 136 58 Z" fill="${c}" ${line}/>
     <path d="M65 50 H135" fill="none" stroke="${shade(c, -0.3)}" stroke-width="7"/>`,
+  graduate: () => `
+    <path d="M62 50 V66 Q100 80 138 66 V50" fill="#39406a" ${line}/>
+    <path d="M36 44 L100 22 L164 44 L100 66 Z" fill="#39406a" ${line}/>
+    <path d="M100 44 L150 52 V74" fill="none" stroke="#ffbf3c" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="150" cy="78" r="5" fill="#ffbf3c" ${thin}/>`,
   hijab: () => '',
   none: () => '',
 };
@@ -127,6 +132,7 @@ function face(config, mood, dx) {
   const glasses = {
     round: `<circle cx="${L}" cy="${y}" r="13" fill="#fff" fill-opacity=".25" ${thin}/><circle cx="${R}" cy="${y}" r="13" fill="#fff" fill-opacity=".25" ${thin}/><path d="M${L + 13} ${y} H${R - 13}" ${thin}/>`,
     square: `<rect x="${L - 13}" y="${y - 11}" width="26" height="22" rx="5" fill="#fff" fill-opacity=".25" ${thin}/><rect x="${R - 13}" y="${y - 11}" width="26" height="22" rx="5" fill="#fff" fill-opacity=".25" ${thin}/><path d="M${L + 13} ${y} H${R - 13}" ${thin}/>`,
+    gold: `<circle cx="${L}" cy="${y}" r="13" fill="#fff" fill-opacity=".3" stroke="#e0932a" stroke-width="5"/><circle cx="${R}" cy="${y}" r="13" fill="#fff" fill-opacity=".3" stroke="#e0932a" stroke-width="5"/><path d="M${L + 13} ${y} H${R - 13}" stroke="#e0932a" stroke-width="5" stroke-linecap="round"/>`,
     star: `<circle cx="${L}" cy="${y}" r="13" fill="#ffbf3c" fill-opacity=".55" ${thin}/><circle cx="${R}" cy="${y}" r="13" fill="#ffbf3c" fill-opacity=".55" ${thin}/><path d="M${L + 13} ${y} H${R - 13}" ${thin}/>`,
   }[config.glasses] ?? '';
   return `
@@ -195,6 +201,8 @@ function pack(config, back) {
 }
 
 const EXTRA = {
+  trophy: `<path d="M128 176 h28 v9 a14 14 0 0 1 -28 0 Z" fill="#ffbf3c" ${thin}/><path d="M128 179 h-6 q0 9 8 10 M156 179 h6 q0 9 -8 10" fill="none" ${thin}/><path d="M142 199 v7 M133 209 h18" fill="none" ${line}/>`,
+  flag: `<path d="M58 206 V140" fill="none" ${line}/><path d="M58 142 l26 9 l-26 9 Z" fill="#ff7a66" ${thin}/>`,
   book: `<rect x="40" y="186" width="34" height="26" rx="4" fill="#2f93b0" ${line}/><path d="M57 186 V212" ${thin}/><path d="M46 194 H52 M62 194 H68" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`,
   lantern: `<circle cx="142" cy="222" r="22" fill="#ffe28a" opacity=".45"/><path d="M134 208 q8 -10 16 0" fill="none" ${thin}/><rect x="132" y="208" width="20" height="24" rx="5" fill="#fff3b8" ${thin}/><path d="M142 208 v24" ${thin}/><rect x="130" y="232" width="24" height="6" rx="3" fill="#b9783d" ${thin}/>`,
   badge: `<path d="M84 162 l-4 -14 h12 Z" fill="#ff7a66" ${thin}/><circle cx="86" cy="170" r="10" fill="#ffbf3c" ${thin}/><circle cx="86" cy="170" r="4" fill="#fff"/>`,

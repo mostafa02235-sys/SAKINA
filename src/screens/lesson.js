@@ -18,7 +18,16 @@ import { renderAvatar } from '../avatar/draw.js';
 import { icon, starRow } from '../components/icons.js';
 import { toast } from '../components/toast.js';
 import { buildSteps } from '../systems/engine.js';
-import { lessonStatus, lessonStars, starsForScore, completeLesson, nextUp, level } from '../systems/progress.js';
+import { lessonStatus, lessonStars, starsForScore, completeLesson, nextUp, level, isItemUnlocked } from '../systems/progress.js';
+import { syncRewards, recordCorrectAnswer } from '../systems/rewards.js';
+import { play } from '../core/sound.js';
+import { celebrate } from '../components/celebrate.js';
+import { REWARDS } from '../data/wardrobe.js';
+import { AVATAR_PRIZES } from '../data/avatar.js';
+
+// Everything that can be unlocked along the way (used to spot what a lesson has just opened).
+const UNLOCKABLE = [...REWARDS, ...AVATAR_PRIZES];
+const ENCOURAGEMENTS = ['lesson.right', 'lesson.right2', 'lesson.right3', 'lesson.right4'];
 
 const arabicDigits = new Intl.NumberFormat('ar-EG', { useGrouping: false });
 
@@ -138,8 +147,10 @@ function renderFooter(step, state) {
       <div class="feedback__row">
         <div class="feedback__friend">${character(right ? 'raccoon' : 'cat', right ? 'cheer' : state.queue[state.position].retry ? 'sad' : 'oops')}</div>
         <div>
-          <p class="feedback__title">${t(right ? 'lesson.right' : 'lesson.wrong')}</p>
+          <p class="feedback__title"><span class="feedback__mark">${icon(right ? 'check' : 'retry', 20)}</span>${t(right ? ENCOURAGEMENTS[state.position % ENCOURAGEMENTS.length] : 'lesson.wrong')}</p>
+          ${right ? '' : `<p class="feedback__answer">${t('lesson.correctIs')} <b ${step.scripture ? 'class="feedback__scripture" lang="ar" dir="rtl"' : ''}>${esc(tr(step.options[step.answer]))}</b></p>`}
           <p class="feedback__why">${esc(tr(step.why))}</p>
+          ${right ? '' : `<p class="feedback__again">${t('lesson.again')}</p>`}
         </div>
       </div>
       <button class="btn ${right ? 'btn--go' : 'btn--oops'} btn--wide" data-action="next">${t('lesson.continue')}</button>
@@ -148,21 +159,21 @@ function renderFooter(step, state) {
 
 /* ---------- Finish ---------- */
 
-function renderFinish(found, lesson, result) {
+function renderFinish(found, lesson, result, extra) {
   const next = nextUp();
   const lv = level();
   const name = store.get().profile.name;
   const news = [
-    ...(result.levelUp ? [t('finish.levelUp', { n: num(result.levelUp) })] : []),
-    ...result.newBadges.map((b) => t('finish.newBadge', { name: tr(b.name) })),
-    ...result.newItems.map((item) => t('finish.newItem', { name: tr(item.name) })),
+    ...(extra.levelUp ? [t('finish.levelUp', { n: num(extra.levelUp) })] : []),
+    ...extra.news.map((item) => t(`finish.new.${item.type}`, { name: tr(item.def.name) })),
+    ...extra.newItems.map((item) => t('finish.newItem', { name: tr(item.name) })),
     ...(result.unlockedIsland ? [t('finish.newIsland', { name: tr(result.unlockedIsland.name) })] : []),
     ...(result.unlockedRegion ? [t('finish.newRegion', { name: tr(result.unlockedRegion.name) })] : []),
   ];
   // A friend says something that fits what just happened.
   const line = result.islandFinished ? 'finish.sayIsland' : result.stars === 3 ? 'finish.sayPerfect' : 'finish.sayGood';
   const speaker = result.islandFinished ? 'raccoon' : 'cat';
-  const hasAvatarItem = result.newItems.some((item) => item.level);
+  const hasAvatarItem = extra.newItems.some((item) => AVATAR_PRIZES.includes(item));
 
   return `
     <div class="view finish">
@@ -176,14 +187,15 @@ function renderFinish(found, lesson, result) {
       </div>
       <p class="finish__say"><b>${t(`name.${speaker}`)}:</b> ${t(line, { name: name || t('profile.friend') })}</p>
       <div class="finish__xp">
-        <span>${icon('star', 22)} ${t('finish.xp', { n: num(result.xp) })}</span>
+        <span>${icon('star', 22)} ${t('finish.xp', { n: num(result.xp + extra.bonusXp) })}</span>
         <span class="bar"><span style="width:${lv.percent}%"></span></span>
         <span>${t('journey.level', { n: num(lv.number) })} · ${t('finish.toNext', { n: num(lv.toNext) })}</span>
       </div>
       ${news.length ? `<ul class="finish__unlocks">${news.map((text) => `<li>${esc(text)}</li>`).join('')}</ul>` : ''}
       <div class="finish__actions">
         ${next ? `<button class="btn btn--go btn--wide" data-go="lesson/${next.lessonId}">${t('finish.next')}</button>` : ''}
-        ${result.newItems.length ? `<button class="btn btn--star btn--wide" data-go="${hasAvatarItem ? 'avatar' : 'friends'}">${t('finish.wardrobe')}</button>` : ''}
+        ${extra.newItems.length ? `<button class="btn btn--star btn--wide" data-go="${hasAvatarItem ? 'avatar' : 'friends'}">${t('finish.wardrobe')}</button>` : ''}
+        ${extra.news.length ? `<button class="btn btn--wide" data-go="awards/${extra.news.some((item) => item.type === 'medal') ? 'medals' : extra.news.some((item) => item.type === 'achievement') ? 'achievements' : 'challenges'}">${t('finish.awards')}</button>` : ''}
         <button class="btn btn--wide" data-go="island/${found.island.id}">${t('finish.back', { name: tr(found.island.name) })}</button>
       </div>
     </div>`;
@@ -258,10 +270,27 @@ export function mount(root, [lessonId]) {
         remember();
         return draw();
       }
+      // What the player had before, so that everything new can be announced.
+      const levelBefore = level().number;
+      const xpBefore = store.get().bonusXp;
+      const hadItems = new Set(UNLOCKABLE.filter((item) => isItemUnlocked(item)));
+
       const result = completeLesson(lessonId, starsForScore(state.firstTryCorrect, questionCount));
-      root.innerHTML = renderFinish(found, lesson, result);
+      const news = syncRewards(); // challenges, medals and achievements this lesson has earned
+      const levelNow = level().number;
+      const extra = {
+        news,
+        levelUp: levelNow > levelBefore ? levelNow : null,
+        bonusXp: store.get().bonusXp - xpBefore,
+        newItems: UNLOCKABLE.filter((item) => !hadItems.has(item) && isItemUnlocked(item)),
+      };
+
+      root.innerHTML = renderFinish(found, lesson, result, extra);
       root.scrollTop = 0;
       buzz('reward');
+      play(result.islandFinished ? 'island' : 'lesson');
+      const cards = [...(extra.levelUp ? [{ type: 'level', level: extra.levelUp }] : []), ...news];
+      if (cards.length) setTimeout(() => alive && celebrate(cards), 1100);
     }
 
     onClick(root, '[data-option]', (button) => {
@@ -280,6 +309,8 @@ export function mount(root, [lessonId]) {
       const entry = state.queue[state.position];
       const right = state.selected === entry.step.answer;
       if (right && !entry.retry) state.firstTryCorrect += 1;
+      if (right) recordCorrectAnswer();
+      play(right ? 'correct' : 'wrong');
       if (!right && !entry.retry) state.queue.push({ step: entry.step, retry: true });
       buzz(right ? 'right' : 'wrong');
       state.phase = 'feedback';

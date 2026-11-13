@@ -15,11 +15,15 @@ import * as lesson from './screens/lesson.js';
 import * as friends from './screens/friends.js';
 import * as avatar from './screens/avatar.js';
 import * as profile from './screens/profile.js';
+import * as awards from './screens/awards.js';
+import { syncRewards } from './systems/rewards.js';
+import { celebrate, closeCelebration } from './components/celebrate.js';
+import { play, unlockSound } from './core/sound.js';
 
-const SCREENS = { world, island, lesson, friends, avatar, profile, journey: profile };
+const SCREENS = { world, island, lesson, friends, avatar, profile, awards, journey: profile };
 
 // How deep each screen is in the world: moving deeper zooms in, moving back zooms out.
-const DEPTH = { world: 0, friends: 0, avatar: 0, profile: 0, journey: 0, island: 1, lesson: 2 };
+const DEPTH = { world: 0, friends: 0, avatar: 0, profile: 0, awards: 0, journey: 0, island: 1, lesson: 2 };
 
 // Was there a saved game when the app opened? (Reported once at start-up.)
 const returningPlayer = localStorage.getItem('sakina.save.v1') != null;
@@ -33,6 +37,16 @@ let currentName = null;
 function draw(name, params) {
   leaveCurrent?.();
   leaveCurrent = null;
+  closeCelebration();
+
+  // Start a new day's challenges if the day has changed, and give anything
+  // that has been earned (for example by answers in a lesson that was left).
+  let news = [];
+  try {
+    news = syncRewards();
+  } catch (error) {
+    console.error(error);
+  }
 
   applyDocumentLanguage();
   applyMotionPreference();
@@ -55,7 +69,9 @@ function draw(name, params) {
         <a class="btn btn--go" href="#/world">${t('nav.backToWorld')}</a>
       </div>`;
   }
+  if (currentName && currentName !== name && name !== 'lesson') play('nav');
   currentName = name;
+  if (news.length && name !== 'lesson') celebrate(news);
 }
 
 function show(route) {
@@ -73,6 +89,12 @@ function show(route) {
 // The phone's Back button (called by the Android app): go up one level.
 // Returns false on the world map, which tells Android to leave the app.
 window.sakinaBack = () => {
+  // First close whatever is open on top of the screen.
+  const open = document.querySelector('.celebrate [data-close], .sheet [data-close]');
+  if (open) {
+    open.click();
+    return true;
+  }
   const route = parseRoute();
   if (route.name === 'world' || !SCREENS[route.name]) return false;
   if (route.name === 'lesson') {
@@ -85,6 +107,9 @@ window.sakinaBack = () => {
 };
 
 document.documentElement.classList.toggle('no-view-transitions', !document.startViewTransition);
+
+// Browsers only allow sound after the first touch.
+window.addEventListener('pointerdown', unlockSound, { once: true, capture: true });
 
 // The list of worlds and islands is needed before anything can be drawn.
 // If it cannot be read, the loading screen turns into its "try again" message.

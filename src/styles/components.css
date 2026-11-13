@@ -59,7 +59,7 @@
 .tabbar {
   flex: none;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   height: calc(var(--tabbar-h) + var(--safe-b));
   padding-bottom: var(--safe-b);
   background: var(--paper);
@@ -121,3 +121,8 @@
   padding: calc(var(--s3) + var(--safe-t)) var(--s4) var(--s3);
 }
 .topbar__title { font-size: var(--text-lg); }
+
+/* Five tabs: slightly narrower pills so they fit a 320px phone. */
+.tab__icon { width: 52px; }
+.tab__label { white-space: nowrap; }
+@media (max-width: 350px) { .tab { font-size: .72rem; } .tab__icon { width: 46px; } }

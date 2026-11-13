@@ -1,8 +1,13 @@
 // Everything the player can choose for "My Avatar".
-// `level` is the player level needed to unlock an option (none = from the start).
+// `level` is the player level needed to unlock an option (none = from the start);
+// `need` names the achievement or medal that gives it.
 // To add an option: list it here, then draw it in src/avatar/draw.js.
 
+import { ITEM_SOURCES } from './awards.js';
+
 const opt = (id, ar, en, level) => ({ id, name: { ar, en }, ...(level ? { level } : {}) });
+// A prize: unlocked by earning the achievement or medal that gives it (see data/awards.js).
+const prize = (id, ar, en) => ({ id, name: { ar, en }, need: ITEM_SOURCES[id] });
 
 export const AVATAR = {
   face: [opt('round', 'دائري', 'Round'), opt('oval', 'بيضاوي', 'Oval'), opt('square', 'مربّع', 'Square'), opt('heart', 'قلب', 'Heart')],
@@ -17,16 +22,18 @@ export const AVATAR = {
   head: [
     opt('none', 'بدون', 'None'), opt('cap', 'قبّعة', 'Cap'), opt('beanie', 'قبّعة صوف', 'Beanie'), opt('kufi', 'طاقية', 'Kufi'),
     opt('hijab', 'حجاب', 'Hijab'), opt('ghutra', 'غترة وعقال', 'Ghutra'), opt('explorer', 'قبّعة المستكشف', 'Explorer hat', 3),
+    prize('graduate', 'قبّعة التخرّج', 'Graduation cap'),
   ],
   top: [
     opt('tshirt', 'قميص قصير', 'T-shirt'), opt('shirt', 'قميص', 'Shirt'), opt('jacket', 'سترة', 'Jacket'), opt('hoodie', 'سترة بقلنسوة', 'Hoodie'),
     opt('thobe', 'ثوب', 'Thobe'), opt('abaya', 'عباءة', 'Abaya'),
   ],
   cloth: ['#2fbf8f', '#4a6fd6', '#ff7a66', '#ffbf3c', '#b57be0', '#f06fa5', '#2f93b0', '#39406a', '#8a5a3c', '#ffffff', '#1d2a4d'],
-  glasses: [opt('none', 'بدون', 'None'), opt('round', 'دائرية', 'Round'), opt('square', 'مربّعة', 'Square'), opt('star', 'نجمية', 'Star glasses', 5)],
+  glasses: [opt('none', 'بدون', 'None'), opt('round', 'دائرية', 'Round'), opt('square', 'مربّعة', 'Square'), opt('star', 'نجمية', 'Star glasses', 5), prize('gold', 'ذهبية', 'Gold glasses')],
   pack: [opt('none', 'بدون', 'None'), opt('backpack', 'حقيبة ظهر', 'Backpack'), opt('satchel', 'حقيبة كتف', 'Satchel', 2)],
   scarf: [opt('none', 'بدون', 'None'), opt('scarf', 'وشاح', 'Scarf')],
-  extra: [opt('none', 'بدون', 'None'), opt('book', 'كتاب', 'Book'), opt('lantern', 'فانوس', 'Lantern', 4), opt('badge', 'وسام النجمة', 'Star medal', 6)],
+  extra: [opt('none', 'بدون', 'None'), opt('book', 'كتاب', 'Book'), opt('lantern', 'فانوس', 'Lantern', 4), opt('badge', 'وسام النجمة', 'Star medal', 6),
+    prize('trophy', 'كأس التحدّيات', 'Challenge trophy'), prize('flag', 'راية المستكشف', 'Explorer\'s flag')],
 };
 
 /** Which palette each colour setting uses. */
@@ -36,5 +43,8 @@ export const COLOUR_OF = { skin: 'skin', hairColor: 'hairColor', headColor: 'clo
 export const AVATAR_REWARDS = Object.values(AVATAR).flat()
   .filter((option) => typeof option === 'object' && option.level)
   .sort((a, b) => a.level - b.level);
+
+/** Every option that has to be earned in any way: by level, achievement or medal. */
+export const AVATAR_PRIZES = Object.values(AVATAR).flat().filter((option) => typeof option === 'object' && (option.level || option.need));
 
 export const VIEWS = ['front', 'right', 'back', 'left'];

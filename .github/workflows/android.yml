@@ -103,7 +103,7 @@ jobs:
           gh release create "$tag" SAKINA.apk \
             --repo "${{ github.repository }}" \
             --target "${{ github.sha }}" \
-            --title "SAKINA 0.3.${{ github.run_number }}" \
+            --title "SAKINA 0.4.${{ github.run_number }}" \
             --notes "Android app built automatically from commit ${{ github.sha }}. Download SAKINA.apk on your phone and open it to install." \
             --latest
 

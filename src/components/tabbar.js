@@ -1,10 +1,11 @@
-// The four main sections of the app, always one tap away.
+// The five main sections of the app, always one tap away.
 
 import { icon } from './icons.js';
 import { t } from '../core/i18n.js';
 
 const TABS = [
   { route: 'world', icon: 'world', label: 'tab.world' },
+  { route: 'awards', icon: 'trophy', label: 'tab.awards' },
   { route: 'avatar', icon: 'avatar', label: 'tab.avatar' },
   { route: 'friends', icon: 'friends', label: 'tab.friends' },
   { route: 'profile', icon: 'journey', label: 'tab.profile' },

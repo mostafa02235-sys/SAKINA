@@ -64,9 +64,9 @@ export function mount(root) {
         const open = isItemUnlocked(option);
         return `
           <button class="tile${ui.draft[key] === option.id ? ' is-active' : ''}${open ? '' : ' is-locked'}" data-set="${key}" data-value="${option.id}"
-                  data-level="${option.level ?? ''}" aria-pressed="${ui.draft[key] === option.id}">
+                  data-level="${option.level ?? ''}" data-need="${option.need ? esc(tr(option.need.name)) : ''}" aria-pressed="${ui.draft[key] === option.id}">
             <span class="tile__name">${esc(tr(option.name))}</span>
-            ${open ? '' : `<span class="tile__lock">${icon('lock', 16)} ${t('journey.level', { n: num(option.level) })}</span>`}
+            ${open ? '' : `<span class="tile__lock">${icon('lock', 16)} ${option.need ? esc(tr(option.need.name)) : t('journey.level', { n: num(option.level) })}</span>`}
           </button>`;
       }).join('')}</div></section>`;
     }).join('');
@@ -94,7 +94,7 @@ export function mount(root) {
   onClick(root, '[data-set]', (button) => {
     if (button.classList.contains('is-locked')) {
       buzz('wrong');
-      return toast(t('avatar.lockedToast', { n: num(Number(button.dataset.level)) }));
+      return toast(button.dataset.need ? t('avatar.prizeToast', { name: button.dataset.need }) : t('avatar.lockedToast', { n: num(Number(button.dataset.level)) }));
     }
     ui.draft[button.dataset.set] = button.dataset.value;
     if (ui.view === 2) ui.view = 0; // show the front again so the change is visible
